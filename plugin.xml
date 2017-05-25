@@ -1,6 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
 <plugin id="cordova-plugins-wechat" version="0.0.1" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
     <name>wechat</name>
+    <engines>
+        <engine name="cordova" version=">=4.1.1"/>
+    </engines>
+    
     <js-module name="wechat" src="www/wechat.js">
         <clobbers target="wechat" />
     </js-module>
@@ -15,5 +19,5 @@
 		<source-file src="src/ios/WeChat.swift" />
 
 	</platform>
-
+ 
 </plugin>

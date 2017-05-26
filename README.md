@@ -3,10 +3,10 @@
 WeChat Project  is intergrated  communication for IOS .
 
 ## Structure 
-![image](https://raw.githubusercontent.com/xhsiung/wechat2/master/imgs/flow.png)
+![image](https://raw.githubusercontent.com/xhsiung/wechat3/master/imgs/flow.png)
 
 ## Show
-![image](https://raw.githubusercontent.com/xhsiung/wechat2/master/imgs/show.png)
+![image](https://raw.githubusercontent.com/xhsiung/wechat3/master/imgs/show.png)
 
 ## Installation
 ```install

@@ -1,6 +1,6 @@
 # WeChat Project
 
-WeChat Project objectives is intergrated  communication for android .
+WeChat Project  is intergrated  communication for IOS .
 
 ## Structure 
 ![image](https://raw.githubusercontent.com/xhsiung/wechat2/master/imgs/flow.png)

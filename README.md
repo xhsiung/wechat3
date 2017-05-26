@@ -451,9 +451,7 @@ data:<input type="text" id="xmsg" value="mymessage">
 
 Done  work:
 * Auto  Connect  and Reconnect  your Server
-* Auto Subscirbe  your  device.uuid   channel
-* Always  Service  is  running
 
 ## History
 
-* **v1.0.1** : 2017-05-26
+* **v1.0.0** : 2017-05-26

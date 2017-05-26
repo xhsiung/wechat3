@@ -1,10 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <plugin id="cordova-plugins-wechat" version="0.0.1" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
     <name>wechat</name>
-    <engines>
-        <engine name="cordova" version=">=4.1.1"/>
-    </engines>
-    
     <js-module name="wechat" src="www/wechat.js">
         <clobbers target="wechat" />
     </js-module>
@@ -17,7 +13,15 @@
 		</config-file>
 
 		<source-file src="src/ios/WeChat.swift" />
+		<source-file src="src/ios/DBHelper.swift" />
+		<source-file src="src/ios/EBusService.swift" />
+		<source-file src="src/ios/EBusDelegate.swift" />
+		<source-file src="src/ios/Utils.swift" />
+		<source-file src="src/ios/SwiftyJSON.swift" />
 
+		<framework src="Socket.IO-Client-Swift" type="podspec" spec="~> 9.0.1" />
+		<framework src="SQLite.swift" type="podspec" spec="~> 0.11.3" />
+		<framework src="Alamofire" type="podspec" spec="~> 4.4" />
 	</platform>
- 
+
 </plugin>

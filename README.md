@@ -46,12 +46,12 @@ disconnect server
 wechat.disconnect();
 ```
 
-subscribe  
+multiSubscribe  
 ```
 wechat.multiSubscribe();
 ```
 
-unsubscribe  
+multiUnSubscribe  
 ```
 wechat.multiUnSubscribe();
 ```
@@ -162,8 +162,8 @@ Sample
 
 
 <hr>
-tid:<input type="text" id="xtid"  value="u0002">
-channel:<input type="text" id="xchannel" value="u0002@u0001">
+tid:<input type="text" id="xtid"  value="u002">
+channel:<input type="text" id="xchannel" value="u002@u001">
 data:<input type="text" id="xmsg" value="mymessage">
 <hr>
 
@@ -257,21 +257,21 @@ data:<input type="text" id="xmsg" value="mymessage">
     }
     //multiSubscribe
     function multiSubscribe(){
-        var pack = {multichanns:[{channel:"u0002@u0001"},
-                                 {channel:"u0003@u0002"},
+        var pack = {multichanns:[{channel:"u002@u001"},
+                                 {channel:"u003@u002"},
                                  {channel:$("#xchannel").val() }]};
             wechat.multiSubscribe(pack);
     }
         
     function multiUnSubscribe(){
-        var pack = {multichanns:[{channel:"u0002@u0001"},
-                                 {channel:"u0003@u0002"},
+        var pack = {multichanns:[{channel:"u002@u001"},
+                                 {channel:"u003@u002"},
                                  {channel:$("#xchannel").val() }]};
         wechat.multiUnSubscribe(pack);
     }
     
     function send(){
-        var pack = {channel:"u0002@u0001",
+        var pack = {channel:"u002@u001",
                     device:"desktop|mobile",
                     action:"send",
                     tid:$("#xtid").val(),
@@ -292,16 +292,16 @@ data:<input type="text" id="xmsg" value="mymessage">
          //only action:"insert|update|delete|deleteall"
          var obj = { action:"deleteall"}
          
-         var obj2 = { action: "insert",m_id: "u0001",
+         var obj2 = { action: "insert",m_id: "u001",
                     custom_name:"alex02", corps: -1, updated_time:"1495430981548"} ;
          
-         var obj3 = { action: "insert" ,m_id: "u0002", custom_name:"alex03"} ;
+         var obj3 = { action: "insert" ,m_id: "u002", custom_name:"alex03"} ;
          
-         var obj4 = { action: "insert" ,m_id: "u0003", custom_name:"alex04" } ;
+         var obj4 = { action: "insert" ,m_id: "u003", custom_name:"alex04" } ;
          
          //group
-         var obj5 = { action: "insert" ,m_id: "g0001",isgroup: 1, custom_name:"mygroup01"} ;
-         var obj6 = { action: "insert" ,m_id: "g0002",isgroup: 1, custom_name:"mygroup02" } ;
+         var obj5 = { action: "insert" ,m_id: "g001",isgroup: 1, custom_name:"mygroup01"} ;
+         var obj6 = { action: "insert" ,m_id: "g002",isgroup: 1, custom_name:"mygroup02" } ;
          
          var pack = [ obj , obj2 , obj3 , obj4, obj5, obj6] ;
          
@@ -363,7 +363,7 @@ data:<input type="text" id="xmsg" value="mymessage">
         wechat.openrooms( pack );
     }
     function getOpenRooms(){
-        var pack = { channel:$("#xchannel").val() , from: "u0001" };
+        var pack = { channel:$("#xchannel").val() , from: "u001" };
         wechat.getOpenRooms( pack , function(obj){
             console.log(obj);
             for (var i=0 ; i< obj.data.length ; i++){
@@ -377,10 +377,10 @@ data:<input type="text" id="xmsg" value="mymessage">
     function getOnLineUsers(){
         var users = [] ;
         
-        var user00 = { sid: "u0001"};
+        var user00 = { sid: "u001"};
         users.push( user00);
         
-        var user01 = { sid: "u0002"};
+        var user01 = { sid: "u002"};
         users.push( user01) ;
         
         var pack = { data: users };

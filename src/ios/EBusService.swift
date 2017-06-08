@@ -5,12 +5,10 @@
 //  Created by Pan Alex on 2017/5/10.
 //  Copyright © 2017年 Pan Alex. All rights reserved.
 //
-
 import Foundation
 import SocketIO
 
 //import SwiftyJSON
-
 class EBusService : NSObject{
     static var ebus:EBusService?
     //WeChat.swift setted
@@ -107,7 +105,7 @@ class EBusService : NSObject{
         socket?.on(clientEvent: .disconnect, callback: { (data, ack) in
             print("disconnect")
         })
-
+        
         socket?.on(clientEvent: .error, callback: { (data, ack) in
             print("error")
         })
@@ -116,7 +114,7 @@ class EBusService : NSObject{
             print("reconnect")
         })
         
-
+        
         socket?.on("mqmsg", callback: { ( data, ack) in
             print("got msg")
             let xdata = data[0] as! String
@@ -134,7 +132,7 @@ class EBusService : NSObject{
                     
                     if cid == self.lastMsgCid || !device.contains("mobile") { return }
                     self.lastMsgCid = cid
-         
+                    
                     var jarr = [JSON]()
                     jarr.append( obj )
                     let jobjArr = JSON(["data": jarr] )
@@ -161,7 +159,7 @@ class EBusService : NSObject{
                             case "notify":
                                 self.dbhelper!.updateInsertChatHistory(data:jobjArr,channel: channel , status: 1)
                                 self.actionNotifyTask(data: jobjArr)
-                            
+                                
                             default: break
                             }
                         }
@@ -194,12 +192,12 @@ class EBusService : NSObject{
                     //true has rows
                     if self.dbhelper!.hasChatHistoryLastRow {
                         self.dbhelper?.updateInsertChatHistory(data: obj, action: "send|notify|invite", status: 0)
-    
+                        
                         //throw unread rows
                         let jobj = self.dbhelper?.queryUnreadChatHistory(action: "send")
                         self.delegate?.msgUnReadCallback(data: jobj!)
                         
-                    //false no rows --> init
+                        //false no rows --> init
                     }else{
                         self.dbhelper?.updateInsertChatHistory(data: obj, action: "send|notify|invite", status: 1)
                     }
@@ -254,7 +252,7 @@ class EBusService : NSObject{
         //send front
         delegate!.msgCallback(data: jdata)
     }
-
+    
     
     func actionInviteTask(data:JSON){
         print("actionInviteTask")

@@ -5,7 +5,6 @@
 //  Created by Pan Alex on 2017/5/17.
 //  Copyright © 2017年 Pan Alex. All rights reserved.
 //
-
 import Foundation
 import Alamofire
 
@@ -40,7 +39,6 @@ class Utils {
     
     func getMultiChanns() -> JSON {
         let owner = dbhelper?.getOwner()
-        if (owner == nil) {return JSON([:])}
         
         var contactsDB = dbhelper!.getContacts()
         
@@ -66,9 +64,81 @@ class Utils {
     }
     
     
+    func getContactsPackJson() -> JSON {
+        let owner = dbhelper?.getOwner()
+        
+        let app = UIApplication.shared.delegate as! AppDelegate
+        var groupArr = [String]()
+        for row in (dbhelper?.getContactsGroup())! {
+            groupArr.append( row["m_id"].stringValue)
+        }
+    
+        let m_id = owner!["m_id"].stringValue
+        let custom_name = owner!["custom_name"].stringValue
+        let addressbook = owner!["addressbook"].stringValue
+        let sex = owner!["sex"].stringValue
+        let birth = owner!["birth"].stringValue
+        
+        let email = owner!["email"].stringValue
+        let phone = owner!["phone"].stringValue
+        let mobile = owner!["mobile"].stringValue
+        let grade = owner!["grade"].stringValue
+        let corps = owner!["corps"].stringValue
+        
+        let islock = owner!["islock"].intValue
+        let isgroup = owner!["isgroup"].intValue
+        let xgroup = groupArr.joined(separator: ",")
+        let peonums = owner!["peonums"].intValue
+        let picture_path = owner!["picture_path"].stringValue
+        
+        let created_time = owner!["created_time"].stringValue
+        let updated_time = owner!["updated_time"].stringValue
+        let contact_id = owner!["contact_id"].stringValue
+        let contact_key = owner!["contact_key"].stringValue
+        let status_msg = owner!["status_msg"].stringValue
+        
+        let ulast_updated_time = owner!["ulast_updated_time"].stringValue
+        let glast_updated_time = owner!["glast_updated_time"].stringValue
+        let others = owner!["others"].stringValue
+        let token = app.token
+        
+        return JSON( ["m_id": m_id,
+                      "custom_name": custom_name,
+                      "addressbook": addressbook,
+                      "sex": sex,
+                      "birth": birth,
+                      
+                      "email": email,
+                      "phone": phone,
+                      "mobile": mobile,
+                      "grade": grade,
+                      "corps": corps,
+            
+                      "islock": islock,
+                      "isgroup": isgroup,
+                      "xgroup": xgroup,
+                      "peonums": peonums,
+                      "picture_path": picture_path,
+            
+                      "created_time": created_time,
+                      "updated_time": updated_time,
+                      "contact_id": contact_id,
+                      "contact_key": contact_key,
+                      "status_msg": status_msg,
+                      
+                      "ulast_updated_time":ulast_updated_time,
+                      "glast_updated_time":glast_updated_time,
+                      "others":others,
+                      "unread": 0,
+                      "platform": "ios",
+                      "token": token
+                      ])
+
+    }
+
+    
     func getUnreadPackJson() -> JSON {
         let owner = dbhelper?.getOwner()
-        if (owner == nil) {return JSON([:])}
         
         let xlastChatHistoryRow = dbhelper?.getChatHistoryLastRow()
         var updatedTime = ""
@@ -82,9 +152,9 @@ class Utils {
         updatedTime = ( xlastChatHistoryRow!.dictionary!.count == 0) ? owner!["updated_time"].stringValue : xlastChatHistoryRow!["updated_time"].stringValue
         
         let pack = JSON([ "sid": owner!["m_id"].stringValue,
-               "channels": JSON( channsarr ),
-               "last_updated_time": updatedTime ])
- 
+                          "channels": JSON( channsarr ),
+                          "last_updated_time": updatedTime ])
+        
         //print( pack )
         return pack
     }
@@ -92,7 +162,6 @@ class Utils {
     
     func getOpenRoomPackJson(data:JSON) -> JSON {
         let owner = dbhelper?.getOwner()
-        if (owner == nil) {return JSON([:])}
         
         let sid = owner!["m_id"].stringValue
         let action = data["action"].stringValue
@@ -104,7 +173,6 @@ class Utils {
     
     func getSignalPack() -> JSON {
         let owner = dbhelper?.getOwner()
-        if (owner == nil) {return JSON([:])}
         
         let sid = owner!["m_id"].stringValue
         let name = owner!["cumstom_name"].stringValue
@@ -118,8 +186,33 @@ class Utils {
         return "http://\(settings["serverip"].stringValue):\(settings["port"].intValue)"
     }
     
+    
+    func restContactsAdd() {
+        let jsonPack = getContactsPackJson()
+        let resturl = "\(getServerURL())/contacts/add"
+        print(resturl)
+        
+        DispatchQueue.global().async {
+            Alamofire.request( resturl,method:.post
+                ,parameters:jsonPack.dictionary! ,headers:["Accept": "application/json"]).responseJSON { response in
+                //debugPrint(response)
+                //var jobj = JSON(["data":[:] ])
+                
+                switch response.result {
+                case .success(let value):
+                    let _ = JSON(value)
+                    print("restContactsAdd scucess")
+                    
+                case .failure(let error):
+                    print(error)
+                }
+            }
+        }
+    }
+    
     func saveSettings(obj:JSON) -> Void {
         let userDefault = UserDefaults.standard
+
         userDefault.set( (obj["serverip"].exists() ? obj["serverip"].stringValue : nil), forKey: "serverip")
         userDefault.set( obj["port"].exists() ? obj["port"].intValue : nil, forKey: "port")
         

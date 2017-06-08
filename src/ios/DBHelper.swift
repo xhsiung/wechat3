@@ -5,7 +5,6 @@
 //  Created by Pan Alex on 2017/5/15.
 //  Copyright © 2017年 Pan Alex. All rights reserved.
 //
-
 import Foundation
 import SQLite
 
@@ -13,7 +12,7 @@ class DBHelper {
     static var dbhelper:DBHelper?
     var db:Connection?
     static var OWNER:JSON = [:]
-    var ContactsDB:JSON? 
+    var ContactsDB:JSON?
     var hasChatHistoryLastRow = false
     
     let tbChatHistory = Table("ChatHistory")
@@ -69,7 +68,6 @@ class DBHelper {
     let contactsUlastUpdatedTime = Expression<String>("ulast_updated_time")
     let contactsGlastUpdatedTime = Expression<String>("glast_updated_time")
     let contactsOthers = Expression<String>("others")
-    let contactsToken = Expression<String>("token")
     
     
     //ChatSyncsTS Table
@@ -159,7 +157,7 @@ class DBHelper {
             print("createChatHistory Error: \(error)")
         }
     }
-
+    
     func createContacts(){
         do {
             try db!.run(tbContacts.create(temporary: false, ifNotExists: true, withoutRowid: false, block: { (tb) in
@@ -190,7 +188,6 @@ class DBHelper {
                 tb.column(contactsUlastUpdatedTime)
                 tb.column(contactsGlastUpdatedTime)
                 tb.column(contactsOthers)
-                tb.column(contactsToken)
             }))
         } catch{
             print("createContacts Error: \(error)")
@@ -230,7 +227,7 @@ class DBHelper {
             try db!.run(tbChatTsFlag.create(temporary: false, ifNotExists: true, withoutRowid: false, block: { (tb) in
                 tb.column(chattsflagFlag , primaryKey: true)
                 tb.column(chattsflagTs)
-   
+                
             }))
         } catch {
             print("createChatTsFlag Error: \(error)")
@@ -257,8 +254,8 @@ class DBHelper {
         do {
             
             for (_,jobj):(String, JSON) in data["data"] {
-            //print(jobj["sid"].stringValue )
-          
+                //print(jobj["sid"].stringValue )
+                
                 //print( jobj )
                 var xjobj = jobj
                 if ( action.contains("send") || action.contains("notify") || action.contains("invite")){
@@ -270,13 +267,13 @@ class DBHelper {
                 
                 if count! > 0 {
                     //update
-                     _ = updateChatHistory(data: xjobj)
+                    _ = updateChatHistory(data: xjobj)
                 }else{
                     //insert
-                     _ = insertChatHistory(data: xjobj )
+                    _ = insertChatHistory(data: xjobj )
                 }
             }
-    
+            
         } catch{
             print("updelChatHistory Error:\(error)")
         }
@@ -289,7 +286,7 @@ class DBHelper {
             for (_,jobj):(String, JSON) in data["data"] {
                 var xjobj = jobj
                 let count = try db?.scalar( tbChatHistory.filter( chatHistoryCid == xjobj["cid"].stringValue ).count)
-               
+                
                 if xjobj["channel"].stringValue == channel {
                     xjobj.dictionaryObject?.removeValue(forKey: "status")
                     try xjobj.merge(with: JSON(["status": status]))
@@ -443,26 +440,26 @@ class DBHelper {
         do {
             let query = tbChatHistory.filter(chatHistoryFlag == -1).order(chatHistoryUpdatedTime.desc).limit(1)
             //let rowarr = try db?.prepare(query)
-        
+            
             for row in try db!.prepare( query ){
                 jsonData = JSON([ "cid": row[chatHistoryCid],
-                                      "channel":row[chatHistoryChannel],
-                                      "action":row[chatHistoryAction],
-                                      "sid":row[chatHistorySid],
-                                      "tid":row[chatHistoryTid],
-                                      "gid":row[chatHistoryGid],
-                                      "corps":row[chatHistoryCorps],
-                                      "category":row[chatHistoryCategory],
-                                      "data":row[chatHistoryData],
-                                      "status":row[chatHistoryStatus],
-                                      "created_time":row[chatHistoryCreatedTime],
-                                      "updated_time":row[chatHistoryUpdatedTime],
-                                      "location_time":row[chatHistoryLocationName],
-                                      "location_address":row[chatHistoryLocationAddress],
-                                      "location_phone":row[chatHistoryLocationPhone],
-                                      "location_latitude":row[chatHistoryLocationLatitude],
-                                      "location_longitude":row[chatHistoryLocationLongitude],
-                                      "flag":row[chatHistoryFlag] ])
+                                  "channel":row[chatHistoryChannel],
+                                  "action":row[chatHistoryAction],
+                                  "sid":row[chatHistorySid],
+                                  "tid":row[chatHistoryTid],
+                                  "gid":row[chatHistoryGid],
+                                  "corps":row[chatHistoryCorps],
+                                  "category":row[chatHistoryCategory],
+                                  "data":row[chatHistoryData],
+                                  "status":row[chatHistoryStatus],
+                                  "created_time":row[chatHistoryCreatedTime],
+                                  "updated_time":row[chatHistoryUpdatedTime],
+                                  "location_time":row[chatHistoryLocationName],
+                                  "location_address":row[chatHistoryLocationAddress],
+                                  "location_phone":row[chatHistoryLocationPhone],
+                                  "location_latitude":row[chatHistoryLocationLatitude],
+                                  "location_longitude":row[chatHistoryLocationLongitude],
+                                  "flag":row[chatHistoryFlag] ])
             }
             
             hasChatHistoryLastRow = ( jsonData.dictionary?.count == 0 ) ? false : true
@@ -481,24 +478,24 @@ class DBHelper {
             let query = tbChatHistory.filter(chatHistoryFlag == 0).order(chatHistoryUpdatedTime.asc)
             for row in try db!.prepare( query ){
                 jarr.append( JSON([ "cid": row[chatHistoryCid],
-                                  "channel":row[chatHistoryChannel],
-                                  "action":row[chatHistoryAction],
-                                  "sid":row[chatHistorySid],
-                                  "tid":row[chatHistoryTid],
-                                  "gid":row[chatHistoryGid],
-                                  "corps":row[chatHistoryCorps],
-                                  "category":row[chatHistoryCategory],
-                                  "data":row[chatHistoryData],
-                                  "status":row[chatHistoryStatus],
-                                  "created_time":row[chatHistoryCreatedTime],
-                                  "updated_time":row[chatHistoryUpdatedTime],
-                                  "location_time":row[chatHistoryLocationName],
-                                  "location_address":row[chatHistoryLocationAddress],
-                                  "location_phone":row[chatHistoryLocationPhone],
-                                  "location_latitude":row[chatHistoryLocationLatitude],
-                                  "location_longitude":row[chatHistoryLocationLongitude],
-                                  "flag":row[chatHistoryFlag] ]) )
- 
+                                    "channel":row[chatHistoryChannel],
+                                    "action":row[chatHistoryAction],
+                                    "sid":row[chatHistorySid],
+                                    "tid":row[chatHistoryTid],
+                                    "gid":row[chatHistoryGid],
+                                    "corps":row[chatHistoryCorps],
+                                    "category":row[chatHistoryCategory],
+                                    "data":row[chatHistoryData],
+                                    "status":row[chatHistoryStatus],
+                                    "created_time":row[chatHistoryCreatedTime],
+                                    "updated_time":row[chatHistoryUpdatedTime],
+                                    "location_time":row[chatHistoryLocationName],
+                                    "location_address":row[chatHistoryLocationAddress],
+                                    "location_phone":row[chatHistoryLocationPhone],
+                                    "location_latitude":row[chatHistoryLocationLatitude],
+                                    "location_longitude":row[chatHistoryLocationLongitude],
+                                    "flag":row[chatHistoryFlag] ]) )
+                
             }
             
             return JSON(["data": jarr])
@@ -560,7 +557,7 @@ class DBHelper {
                                   "chat_name": custom_name,
                                   "peonums": peonums,
                                   "unread": count
-                                  ] ))
+                    ] ))
             }
             
             //print( JSON(["data": jarr ]) )
@@ -582,23 +579,23 @@ class DBHelper {
             let query = tbChatHistory.filter( chatHistoryAction == "send" && chatHistoryFlag == -1 && chatHistoryChannel == channel).order(chatHistoryUpdatedTime.desc).limit(limit , offset: offset)
             for row in try db!.prepare( query ){
                 jarr.append( JSON([ "cid": row[chatHistoryCid],
-                                      "channel":row[chatHistoryChannel],
-                                      "action":row[chatHistoryAction],
-                                      "sid":row[chatHistorySid],
-                                      "tid":row[chatHistoryTid],
-                                      "gid":row[chatHistoryGid],
-                                      "corps":row[chatHistoryCorps],
-                                      "category":row[chatHistoryCategory],
-                                      "data":row[chatHistoryData],
-                                      "status":row[chatHistoryStatus],
-                                      "created_time":row[chatHistoryCreatedTime],
-                                      "updated_time":row[chatHistoryUpdatedTime],
-                                      "location_time":row[chatHistoryLocationName],
-                                      "location_address":row[chatHistoryLocationAddress],
-                                      "location_phone":row[chatHistoryLocationPhone],
-                                      "location_latitude":row[chatHistoryLocationLatitude],
-                                      "location_longitude":row[chatHistoryLocationLongitude],
-                                      "flag":row[chatHistoryFlag] ]) )
+                                    "channel":row[chatHistoryChannel],
+                                    "action":row[chatHistoryAction],
+                                    "sid":row[chatHistorySid],
+                                    "tid":row[chatHistoryTid],
+                                    "gid":row[chatHistoryGid],
+                                    "corps":row[chatHistoryCorps],
+                                    "category":row[chatHistoryCategory],
+                                    "data":row[chatHistoryData],
+                                    "status":row[chatHistoryStatus],
+                                    "created_time":row[chatHistoryCreatedTime],
+                                    "updated_time":row[chatHistoryUpdatedTime],
+                                    "location_time":row[chatHistoryLocationName],
+                                    "location_address":row[chatHistoryLocationAddress],
+                                    "location_phone":row[chatHistoryLocationPhone],
+                                    "location_latitude":row[chatHistoryLocationLatitude],
+                                    "location_longitude":row[chatHistoryLocationLongitude],
+                                    "flag":row[chatHistoryFlag] ]) )
             }
             
             return JSON(["data": jarr])
@@ -606,7 +603,7 @@ class DBHelper {
             print("queryDBDate Error:\(error)")
             return JSON(["data": [:] ])
         }
-    
+        
     }
     
     func hasContacts(m_id:String) -> Bool {
@@ -624,17 +621,17 @@ class DBHelper {
     func getContactsUser( m_id:String  ) -> JSON {
         print("DBHelper getContactsUser")
         ContactsDB = ( ContactsDB == nil ) ? getContacts() : ContactsDB
-
+        
         for user in (ContactsDB!["data"].array)! {
             if user["m_id"].stringValue == m_id {
                 return user
             }
         }
-     
+        
         return JSON([:])
     }
     
-
+    
     func getOwner() -> JSON{
         print("DBHelper getOwner")
         if DBHelper.OWNER.dictionary!.count != 0 {
@@ -658,7 +655,7 @@ class DBHelper {
         
         var grouparr = [JSON]()
         for user in (ContactsDB!["data"].array)! {
-            //owner
+            //group
             if user["isgroup"].intValue == 1 {
                 grouparr.append(user)
             }
@@ -678,35 +675,35 @@ class DBHelper {
             for row in try db!.prepare( tbContacts.order(contactsCorps.desc) ) {
                 //print( owner[contactsMid] )
                 let json = JSON(["m_id":row[contactsMid],
-                                  "custom_name":row[contactsCustomName],
-                                  "addressbook":row[contactsAddressBook],
-                                  "sex":row[contactsSex],
-                                  "birth":row[contactsBirth],
-                                  "email":row[contactsEmail],
-                                  "phone":row[contactsPhone],
-                                  "mobile":row[contactsMobile],
-                                  "grade":row[contactsGrade],
-                                  "corps":row[contactsCorps],
-                                  "islock":row[contactsIsLock],
-                                  "isgroup":row[contactsIsGroup],
-                                  "xgroup":row[contactsXGroup],
-                                  "peonums":row[contactsPeoNums],
-                                  "picture_path":row[contactsPicturePath],
-                                  "created_time":row[contactsCreatedTime],
-                                  "updated_time":row[contactsUpdatedTime],
-                                  "contact_id":row[contactsId],
-                                  "contact_key":row[contactsKey],
-                                  "status_msg":row[contactsStatusMsg],
-                                  "ulast_updated_time":row[contactsUlastUpdatedTime],
-                                  "glast_updated_time":row[contactsGlastUpdatedTime],
-                                  "others":row[contactsOthers],
-                                  "token":row[contactsToken]])
+                                 "custom_name":row[contactsCustomName],
+                                 "addressbook":row[contactsAddressBook],
+                                 "sex":row[contactsSex],
+                                 "birth":row[contactsBirth],
+                                 "email":row[contactsEmail],
+                                 "phone":row[contactsPhone],
+                                 "mobile":row[contactsMobile],
+                                 "grade":row[contactsGrade],
+                                 "corps":row[contactsCorps],
+                                 "islock":row[contactsIsLock],
+                                 "isgroup":row[contactsIsGroup],
+                                 "xgroup":row[contactsXGroup],
+                                 "peonums":row[contactsPeoNums],
+                                 "picture_path":row[contactsPicturePath],
+                                 "created_time":row[contactsCreatedTime],
+                                 "updated_time":row[contactsUpdatedTime],
+                                 "contact_id":row[contactsId],
+                                 "contact_key":row[contactsKey],
+                                 "status_msg":row[contactsStatusMsg],
+                                 "ulast_updated_time":row[contactsUlastUpdatedTime],
+                                 "glast_updated_time":row[contactsGlastUpdatedTime],
+                                 "others":row[contactsOthers]
+                                ])
                 userarr.append(json)
             }
             
             ContactsDB = JSON( ["data":userarr] )
             return ContactsDB!
-    
+            
         } catch {
             print("DBHelper getContacts Error:\(error)")
             return JSON(["data":[] ])
@@ -722,36 +719,36 @@ class DBHelper {
             var json = getDefaultContact(data: Json)
             ContactsDB = nil
             switch json["action"].stringValue {
-                case "insert":
-                    print("DBHelper operatorContacts insert")
-                    let success = insertContacts(data: json)
-                    if !success {
-                        return false
-                    }
-                
-                case "update":
-                    print("DBHelper operatorContacts update")
-                    let success = updateContacts(data: json)
-                    if !success {
-                        return false
-                    }
-                
-                case "delete":
-                    print("DBHelper operatorContacts delete")
-                    let success = deleteContacts(data: json)
-                    if !success {
-                        return false
-                    }
-                
-                case "deleteall":
-                    print("DBHelper operatorContacts deleteall")
-                    let success = deleteallContacts(data: json)
-                    if !success {
-                        return false
-                    }
-                default:
-                    break
+            case "insert":
+                print("DBHelper operatorContacts insert")
+                let success = insertContacts(data: json)
+                if !success {
+                    return false
                 }
+                
+            case "update":
+                print("DBHelper operatorContacts update")
+                let success = updateContacts(data: json)
+                if !success {
+                    return false
+                }
+                
+            case "delete":
+                print("DBHelper operatorContacts delete")
+                let success = deleteContacts(data: json)
+                if !success {
+                    return false
+                }
+                
+            case "deleteall":
+                print("DBHelper operatorContacts deleteall")
+                let success = deleteallContacts(data: json)
+                if !success {
+                    return false
+                }
+            default:
+                break
+            }
         }
         return true
     }
@@ -760,22 +757,21 @@ class DBHelper {
         do {
             let tbFilterContacts = tbContacts.filter( contactsMid == data["m_id"].stringValue)
             let xupdate = tbFilterContacts.update([contactsCustomName <- data["custom_name"].stringValue,
-                                                    contactsAddressBook <- data["addressbook"].stringValue,
-                                                    contactsSex <- data["sex"].stringValue,
-                                                    contactsBirth <- data["birth"].stringValue,
-                                                    contactsEmail <- data["email"].stringValue,
-                                                    contactsPhone <- data["phone"].stringValue,
-                                                    contactsMobile <- data["mobile"].stringValue,
-                                                    contactsGrade <- data["grade"].stringValue,
-                                                    contactsCorps <- data["corps"].intValue,
-                                                    contactsIsLock <- data["islock"].intValue,
-                                                    contactsIsGroup <- data["isgroup"].intValue,
-                                                    contactsXGroup <- data["xgroup"].stringValue,
-                                                    contactsPeoNums <- data["peonums"].intValue,
-                                                    contactsUlastUpdatedTime <- data["ulast_updated_time"].stringValue,
-                                                    contactsGlastUpdatedTime <- data["glast_updated_time"].stringValue,
-                                                    contactsOthers <- data["others"].stringValue,
-                                                    contactsToken <- data["token"].stringValue ])
+                                                   contactsAddressBook <- data["addressbook"].stringValue,
+                                                   contactsSex <- data["sex"].stringValue,
+                                                   contactsBirth <- data["birth"].stringValue,
+                                                   contactsEmail <- data["email"].stringValue,
+                                                   contactsPhone <- data["phone"].stringValue,
+                                                   contactsMobile <- data["mobile"].stringValue,
+                                                   contactsGrade <- data["grade"].stringValue,
+                                                   contactsCorps <- data["corps"].intValue,
+                                                   contactsIsLock <- data["islock"].intValue,
+                                                   contactsIsGroup <- data["isgroup"].intValue,
+                                                   contactsXGroup <- data["xgroup"].stringValue,
+                                                   contactsPeoNums <- data["peonums"].intValue,
+                                                   contactsUlastUpdatedTime <- data["ulast_updated_time"].stringValue,
+                                                   contactsGlastUpdatedTime <- data["glast_updated_time"].stringValue,
+                                                   contactsOthers <- data["others"].stringValue ])
             try db!.run(xupdate)
             return true
         } catch {
@@ -837,8 +833,7 @@ class DBHelper {
                                             contactsStatusMsg <- data["status_msg"].stringValue,
                                             contactsUlastUpdatedTime <- data["ulast_updated_time"].stringValue,
                                             contactsGlastUpdatedTime <- data["glast_updated_time"].stringValue,
-                                            contactsOthers <- data["others"].stringValue,
-                                            contactsToken <- data["token"].stringValue)
+                                            contactsOthers <- data["others"].stringValue)
             try db?.run(xinsert)
             return true
         } catch {
@@ -859,9 +854,9 @@ class DBHelper {
             
             for row in try db!.prepare( query ) {
                 jarr.append( JSON([ "id": row[ chatnewsId ],
-                                        "title": row[chatnewsTitle],
-                                        "content": row[chatnewsContent],
-                                        "created_time":row[chatnewsCreatedTime] ]) )
+                                    "title": row[chatnewsTitle],
+                                    "content": row[chatnewsContent],
+                                    "created_time":row[chatnewsCreatedTime] ]) )
             }
             
             return JSON(["data": jarr ])
@@ -871,7 +866,7 @@ class DBHelper {
         
         return JSON([:])
     }
-
+    
     
     func insertChatNews(data:JSON ) -> Bool{
         do {
@@ -888,11 +883,11 @@ class DBHelper {
             return false
         }
     }
-
+    
     
     func updateInertChatTsFlag(data:JSON) -> Bool {
         do {
-        
+            
             let tbFilterChatTsFlag = tbChatTsFlag.filter( chattsflagFlag == data["flag"].stringValue)
             let count = try db?.scalar( tbFilterChatTsFlag.count )
             
@@ -955,7 +950,7 @@ class DBHelper {
                 default: break
                 }
             }
-        
+            
             return true
         } catch {
             print("restDB Error:\(error)")
@@ -993,7 +988,6 @@ class DBHelper {
         let ulast_updated_time = data["ulast_updated_time"].exists() ? data["ulast_updated_time"].stringValue:""
         let glast_updated_time = data["glast_updated_time"].exists() ? data["glast_updated_time"].stringValue:""
         let others = data["others"].exists() ? data["others"].stringValue : ""
-        let token = data["token"].exists() ? data["token"].stringValue : ""
         
         return JSON(["action":action,
                      "m_id":m_id,
@@ -1018,8 +1012,7 @@ class DBHelper {
                      "status_msg":status_msg,
                      "ulast_updated_time":ulast_updated_time,
                      "glast_updated_time":glast_updated_time,
-                     "others":others,
-                     "token":token])
+                     "others":others])
     }
     
     
@@ -1038,39 +1031,39 @@ class DBHelper {
         let corps = data["coprs"].exists() ? data["corps"].intValue : 0
         let category = data["category"].exists() ? data["category"].stringValue : ""
         let xdata = data["data"].exists() ? data["data"].stringValue : ""
-    
+        
         let status = data["status"].exists() ? data["status"].intValue : 0
         let created_time = data["created_time"].exists() ? data["created_time"].stringValue : ""
         let updated_time = data["updated_time"].exists() ? data["updated_time"].stringValue : ""
         let location_name = data["location_name"].exists() ? data["location_name"].stringValue : ""
         let location_address = data["location_address"].exists() ? data["location_address"].stringValue : ""
-    
+        
         let location_phone = data["location_phone"].exists() ? data["location_phone"].stringValue : ""
         let location_latitude = data["location_latitude"].exists() ? data["location_latitude"].intValue : 0
         let location_longitude = data["longitude"].exists() ? data["longitude"].intValue : 0
         let flag = data["flag"].exists() ? data["flag"].intValue : 0
         
         return JSON( [ "device":device ,
-                      "cid":cid,
-                      "channel":channel,
-                      "action":action,
-                      "sid":sid,
-                      "tid":tid,
-                      "gid":gid,
-                      "corps":corps,
-                      "category":category,
-                      "data":xdata,
-                      "status":status,
-                      "created_time":created_time,
-                      "updated_time":updated_time,
-                      "location_time":location_name,
-                      "location_address":location_address,
-                      "location_phone":location_phone,
-                      "location_latitude":location_latitude,
-                      "location_longitude":location_longitude,
-                      "flag":flag] )
+                       "cid":cid,
+                       "channel":channel,
+                       "action":action,
+                       "sid":sid,
+                       "tid":tid,
+                       "gid":gid,
+                       "corps":corps,
+                       "category":category,
+                       "data":xdata,
+                       "status":status,
+                       "created_time":created_time,
+                       "updated_time":updated_time,
+                       "location_time":location_name,
+                       "location_address":location_address,
+                       "location_phone":location_phone,
+                       "location_latitude":location_latitude,
+                       "location_longitude":location_longitude,
+                       "flag":flag] )
     }
-
+    
     
     deinit {
         DBHelper.OWNER = JSON([:])

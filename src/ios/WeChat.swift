@@ -6,6 +6,7 @@ import Alamofire
     var utils:Utils?
     static var roomName = ""
     var cmd:CDVInvokedUrlCommand?
+    var firstConn = 0
     
     //init process
     override func pluginInitialize(){
@@ -24,16 +25,17 @@ import Alamofire
     @objc(start:)
     func start(_ command: CDVInvokedUrlCommand) {
         print("WeChat Start")
-       self.cmd = command
+        self.cmd = command
     }
     
     //test
     @objc(test:)
     func test(_ command: CDVInvokedUrlCommand) {
         print("WeChat test")
-        _ = self.dbhelper?.queryGroupChatHistory()
+        //_ = self.dbhelper?.queryGroupChatHistory()
+        utils?.restContactsAdd()
+        
     }
-
     
     //receive message
     func msgCallback(data: JSON) {
@@ -63,15 +65,18 @@ import Alamofire
     func msgUnReadInitCallback(data: JSON) {
         print("msgUnReadInitCallback")
         DispatchQueue.global().async {
-             self.commandDelegate!.evalJs("wechatOnUnReadChatInit(\(data))")
+            self.commandDelegate!.evalJs("wechatOnUnReadChatInit(\(data))")
         }
     }
     
     
     //reconnected to connect
     func socketConnectCallback(){
-        print("socketConnectCallback connect")
-        self.initConn( self.cmd! )
+        if firstConn > 0 {
+            print("socketConnectCallback connect")
+            self.initConn( self.cmd! )
+        }
+        firstConn += 1
     }
     
     //saveChatSettings
@@ -79,6 +84,7 @@ import Alamofire
     func saveChatSettings(_ command: CDVInvokedUrlCommand){
         print("WeChat saveChatSettings")
         let data = JSON(command.arguments[0])
+        
         utils!.saveSettings(obj: data)
         
         //print( obj )
@@ -95,7 +101,7 @@ import Alamofire
         
         self.commandDelegate!.send( pluginResult, callbackId: command.callbackId)
     }
-
+    
     
     //initConn
     @objc(initConn:)
@@ -104,7 +110,7 @@ import Alamofire
         let settings = UserDefaults.standard
         if settings.object(forKey: "serverip") == nil || settings.object(forKey: "port") == nil { return }
         self.connect(command)
-
+        
         //init subscribe person and grpup
         DispatchQueue.global().asyncAfter(deadline: .now() + .milliseconds(1000), execute: {
             let multichanns = self.utils!.getMultiChanns()
@@ -115,6 +121,9 @@ import Alamofire
             let signalpack = self.utils?.getSignalPack()
             self.ebus?.SendSignal(data: signalpack! )
             
+            //cloud contacts add
+             self.utils?.restContactsAdd()
+            
             //unread updatedb
             let unreadpack = self.utils?.getUnreadPackJson()
             self.ebus?.exunread(data: unreadpack!)
@@ -123,14 +132,14 @@ import Alamofire
         
     }
     
-
+    
     
     //connect
     @objc(connect:)
     func connect(_ command: CDVInvokedUrlCommand){
         print("WeChat connect")
         let jdata = utils!.getSettings()
-
+        
         DispatchQueue.global().async {
             self.ebus!.Connect(data: jdata )
         }
@@ -160,7 +169,7 @@ import Alamofire
         DispatchQueue.global().async {
             self.ebus!.MultiUnSubscribe(data: jdata)
         }
-       
+        
     }
     
     @objc(send:)
@@ -171,7 +180,7 @@ import Alamofire
             DispatchQueue.global().async {
                 self.ebus!.Send(data: jdata)
             }
-           
+            
         }else {
             DispatchQueue.global().async {
                 jdata = self.dbhelper!.getDefaultChatHistory(data: jdata)
@@ -181,7 +190,7 @@ import Alamofire
         }
         
     }
-
+    
     
     @objc(multiRegister:)
     func multiRegister(_ command: CDVInvokedUrlCommand){
@@ -204,7 +213,7 @@ import Alamofire
         DispatchQueue.global().async {
             let jobj = self.dbhelper!.getOwner()
             let pluginResult = CDVPluginResult(status:CDVCommandStatus_OK,messageAs: jobj.dictionaryObject!)
-
+            
             self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
         }
     }
@@ -255,7 +264,7 @@ import Alamofire
             if xaction == "open" {
                 WeChat.roomName = xchannel
                 _ = self.dbhelper?.updateChatHistoryStatus(action: "send", channel: xchannel , status: 1 )
-            
+                
             }else{
                 WeChat.roomName = ""
             }
@@ -270,7 +279,7 @@ import Alamofire
         let sid = jdata["from"].stringValue
         let channel = jdata["channel"].stringValue
         let resturl = "\(utils!.getServerURL())/\(sid)/\(channel)"
-
+        
         DispatchQueue.global().async {
             Alamofire.request( resturl ,headers:["Accept": "application/json"]).responseJSON { response in
                 //debugPrint(response)
@@ -323,17 +332,17 @@ import Alamofire
         DispatchQueue.global().async {
             var pluginResult:CDVPluginResult
             switch action.lowercased() {
-                case "insert":
-                    _ = self.dbhelper?.insertChatNews(data: jdata)
-    
-                    pluginResult = CDVPluginResult(status:CDVCommandStatus_OK,messageAs: JSON(["success":true]).dictionaryObject! )
-                case "query":
-                    let jobj = self.dbhelper?.queryChatNews(data: jdata)
-                    pluginResult = CDVPluginResult(status:CDVCommandStatus_OK,messageAs: jobj!.dictionaryObject!)
+            case "insert":
+                _ = self.dbhelper?.insertChatNews(data: jdata)
                 
-                default:
-                    pluginResult = CDVPluginResult(status:CDVCommandStatus_OK,messageAs: JSON(["success":false]).dictionaryObject!)
-                    break
+                pluginResult = CDVPluginResult(status:CDVCommandStatus_OK,messageAs: JSON(["success":true]).dictionaryObject! )
+            case "query":
+                let jobj = self.dbhelper?.queryChatNews(data: jdata)
+                pluginResult = CDVPluginResult(status:CDVCommandStatus_OK,messageAs: jobj!.dictionaryObject!)
+                
+            default:
+                pluginResult = CDVPluginResult(status:CDVCommandStatus_OK,messageAs: JSON(["success":false]).dictionaryObject!)
+                break
             }
             
             self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
@@ -348,7 +357,7 @@ import Alamofire
         
         DispatchQueue.global().async {
             var pluginResult:CDVPluginResult
-        
+            
             switch action.lowercased() {
             case "insert","update":
                 let isSuccess = self.dbhelper?.updateInertChatTsFlag(data: jdata)
@@ -366,7 +375,7 @@ import Alamofire
                 self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
                 break
             }
-
+            
         }
     }
     
@@ -385,6 +394,7 @@ import Alamofire
             let pluginResult = CDVPluginResult(status:CDVCommandStatus_OK,messageAs: rjobj.dictionaryObject!)
             self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
         }
+        
     }
     
     

@@ -153,6 +153,18 @@
         cordova.exec( null , null , "WeChat", "clear" , [ ]);
    }
    
+   //del chat_history table
+   WeChat.prototype.del_chat_history = function( arg0 , successCallback){
+        cordova.exec( successCallback , null , "WeChat", "del_chat_history" , [ arg0 ]);
+   }
+               
+   //getInviteChann
+   WeChat.prototype.getInviteChann = function( sid , tid){
+        var max = ( sid > tid) ?  sid : tid;
+        var min = ( sid < tid) ?  sid : tid;
+        return max + "@" + min ;
+   }
+               
    //test
    WeChat.prototype.test = function(){
         cordova.exec( null , null , "WeChat", "test" , [ ]);

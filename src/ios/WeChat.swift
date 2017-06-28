@@ -250,6 +250,18 @@ import Alamofire
     }
     
     
+    @objc(del_chat_history:)
+    func del_chat_history(_ command: CDVInvokedUrlCommand){
+        let jdata = JSON(command.arguments[0])
+        DispatchQueue.global().async {
+            let isSucc = self.dbhelper?.deleteChatHistory(data: jdata)
+            
+            let pluginResult = CDVPluginResult(status:CDVCommandStatus_OK,messageAs: JSON(["success":isSucc]).dictionaryObject!)
+            self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
+        }
+    }
+    
+    
     @objc(openrooms:)
     func openrooms(_ command: CDVInvokedUrlCommand){
         let jdata = JSON(command.arguments[0])

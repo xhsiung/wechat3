@@ -310,7 +310,10 @@ class DBHelper {
     func deleteChatHistory(data:JSON) -> Bool {
         print("DBHelper deleteChatHistory")
         do {
-            let tbFilterChatHistory = tbChatHistory.filter( chatHistoryCid == data["cid"].stringValue)
+            let filterparam = data["cid"].exists() ? data["cid"].stringValue : (data["cid"].exists() ? data["channel"].stringValue:"" )
+            if filterparam.isEmpty { return false }
+            
+            let tbFilterChatHistory = tbChatHistory.filter( chatHistoryCid == filterparam )
             let xdelete = tbFilterChatHistory.delete()
             try db?.run(xdelete)
             return true

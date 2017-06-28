@@ -2,329 +2,339 @@
 
 <html>
     <head>
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' * data: gap: https://ssl.gstatic.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">
             <meta name="format-detection" content="telephone=no">
                 <meta name="msapplication-tap-highlight" content="no">
                     <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
                         <title>Hello World</title>
                         
-</head>
-<body>
+    </head>
+    <body>
         
-    <div class="app">
-        <div id="deviceready" class="blink">
-            <p class="event listening">Connecting to Device</p>
-            <p class="event received">Device is Ready</p>
+        <div class="app">
+            <div id="deviceready" class="blink">
+                <p class="event listening">Connecting to Device</p>
+                <p class="event received">Device is Ready</p>
+            </div>
         </div>
-    </div>
-    
-    
-    <button type="button" onclick="multiRegister()" >multiRegister</button>
-    <button type="button" onclick="getOwner()">getOwner</button>
-    <button type="button" onclick="existOwner()">existOwner</button>
-    
-    <button type="button" onclick="saveChatSettings()">saveChatSettings</button>
-    <button type="button" onclick="getChatSettings()">getChatSettings</button>
-    <button type="button" onclick="initConn()">initConn</button>
-    <button type="button" onclick="connect()">connect</button>
-    <button type="button" onclick="disconnect()">disconnect</button>
         
         
-    <hr>
-tid:<input type="text" id="xtid"  value="u002">
-channel:<input type="text" id="xchannel" value="u002@u001">
-data:<input type="text" id="xmsg" value="mymessage">
-    <hr>
-    
-    <button type="button" onclick="multiSubscribe()">multiSubscribe</button>
-    <button type="button" onclick="multiUnSubscribe()">multiUnSubscribe</button>
-    
-    <button type="button" onclick="openrooms()" >openrooms</button>
-    <button type="button" onclick="closerooms()" >closerooms</button>
-    <button type="button" onclick="getOpenRooms()" >getOpenRooms</button>
-    
-    <button type="button" onclick="send()">send</button>
-    <button type="button" onclick="sendGroup()">sendGroup</button>
-    <button type="button" onclick="undelivered()">undelivered</button>
-    <button type="button" onclick="querydbdate()">querydbdate</button>
-    
-    <button type="button" onclick="getOnLineUsers()" >getOnLineUsers</button>
-    <button type="button" onclick="crudTsFlag()" >crudTsFlag</button>
-    <button type="button" onclick="crudNews()" >crudNews</button>
-    <button type="button" onclick="resetdb()" >resetdb</button>
-    
-    <button type="button" onclick="myclear()">myclear</button>
-     <button type="button" onclick="mytest()">mytest</button>
-    
-    <div id="message"></div>
-    
-    <script type="text/javascript" src="js/jquery.min.js"></script>
-    <script type="text/javascript" src="cordova.js"></script>
-    <script type="text/javascript" src="js/index.js"></script>
-    <script type="text/javascript">
-        document.addEventListener("deviceready", onDeviceReady, false);
-        function onDeviceReady() {
-            window.addEventListener("wechatevent", OnEBusEvent, false);
-        };
-    
-    function OnEBusEvent( obj ){  //JSONObject
-        console.log("OnEBusEvent");
-    };
-    function msgCallback(obj){
-        console.log(obj);
-        for (var i=0; i < obj.data.length; i++){
-            $("#message").append("<p>" + obj.data[i].data + "</p>");
-        }
-    }
-    //unreaded
-    function wechatOnUnReadChat(obj){
-        //console.log( obj  )
-        for (var i=0; i< obj.data.length ; i++){
-            console.log(obj.data[i])
-        }
-    }
-    // only one shoot
-    function wechatOnUnReadChatInit( obj ){
-        //console.log( obj  )
-        for (var i=0; i< obj.data.length ; i++){
-            console.log(obj.data[i])
-        }
-    }
-    function saveChatSettings(){
-        var conf = { serverip: "",
-            port: 0,
-            notifyTarget: "",
-            hasNotify: 1,
-            notifyTitle: "",
-            notifyTicker: "",
-            hasVibrate: 0,
-            hasSound: 0,
-            hasSaveEl: 1 ,
-            key: "1234567890mobile" ,
-            fontSize: 16
-        };
-    
-        wechat.saveChatSettings( conf , function(err){
-                                alert("error");
-                                });
-    }
-    //getChatSettings
-    function getChatSettings(){
-        wechat.getChatSettings( function( data ){
-            console.log( data );
-        });
-    }
-    function initConn(){
-        wechat.initConn()
-    }
-    //connect
-    function connect(){
-        wechat.connect();
-    }
-    //disconnect
-    function disconnect(){
-        wechat.disconnect();
-    }
-    //multiSubscribe
-    function multiSubscribe(){
-        var pack = {multichanns:[{channel:"u002@u001"},
-                                 {channel:"u003@u002"},
-                                 {channel:$("#xchannel").val() }]};
-        wechat.multiSubscribe(pack);
-    }
-    
-    function multiUnSubscribe(){
-        var pack = {multichanns:[{channel:"u002@u001"},
-                                 {channel:"u003@u002"},
-                                 {channel:$("#xchannel").val() }]};
-        wechat.multiUnSubscribe(pack);
-    }
-    
-    function send(){
-        var pack = {channel:"u002@u001",
-            device:"desktop|mobile",
-            action:"send",
-            tid:$("#xtid").val(),
-            data: $("#xmsg").val() };
-        wechat.send(pack);
-    }
-    function sendGroup(){
-        var pack = {device:"desktop|mobile",
-            channel: $("#xchannel").val(),
-            tid: $("#xtid").val(),
-            gid: "g0002",
-            action:"send",
-            category:"user",
-            data: $("#xmsg").val() };
-        wechat.send(pack);
-    }
-    function multiRegister(){
-        //only action:"insert|update|delete|deleteall"
-        var obj = { action:"deleteall"}
+        <button type="button" onclick="multiRegister()" >multiRegister</button>
+        <button type="button" onclick="getOwner()">getOwner</button>
+        <button type="button" onclick="existOwner()">existOwner</button>
         
-        var obj2 = { action: "insert",m_id: "u001",
-            custom_name:"alex02", corps: -1, updated_time:"1495430981548"} ;
+        <button type="button" onclick="saveChatSettings()">saveChatSettings</button>
+        <button type="button" onclick="getChatSettings()">getChatSettings</button>
+        <button type="button" onclick="initConn()">initConn</button>
+        <button type="button" onclick="connect()">connect</button>
+        <button type="button" onclick="disconnect()">disconnect</button>
         
-        var obj3 = { action: "insert" ,m_id: "u002", custom_name:"alex03"} ;
         
-        var obj4 = { action: "insert" ,m_id: "u003", custom_name:"alex04" } ;
-        
-        //group
-        var obj5 = { action: "insert" ,m_id: "g001",isgroup: 1, custom_name:"mygroup01"} ;
-        var obj6 = { action: "insert" ,m_id: "g002",isgroup: 1, custom_name:"mygroup02" } ;
-        
-        var pack = [ obj , obj2 , obj3 , obj4, obj5, obj6] ;
-        
-        wechat.multiRegister( pack , function(){ alert("error")})
-    }
-    //getOwner
-    function getOwner(){
-        wechat.getOwner( function(data){
-            console.log( data )
-        });
-    }
-    
-    //existOwner
-    function existOwner(){
-        //true:owner in , false:without owner
-        wechat.existOwner( function( hasowner ){
-            console.log(hasowner);
-        });
-    };
-    //getContacts
-    function getContacts(){
-        wechat.getContacts( function(data){
-            console.log(data)
-        });
-    }
-    //undeliverd
-    function undelivered(){
-        wechat.undelivered(function( obj ){
-                           for(var i=0 ; i < obj.data.length;i++){
-                           //console.log(  obj.data[i] );
-                           var pack = {"cid": obj.data[i].cid ,
-                           "channel":obj.data[i].channel,
-                           "device":"desktop|mobile",
-                           "action": obj.data[i].action,
-                           "sid":obj.data[i].sid,
-                           "tid":obj.data[i].tid,
-                           "gid":obj.data[i].gid,
-                           "corps":obj.data[i].corps,
-                           "category":obj.data[i].category,
-                           "data":obj.data[i].data,
-                           };
-                           
-                           wechat.send(pack);
-                           }
-                           });
-    }
-    //querydbdate
-    function querydbdate(){
-        var pack = { channel:$("#xchannel").val() ,offset:0, limit:10 };
-        console.log(pack);
-        wechat.querydbdate( pack , function(data){
-                           console.log( data );
-                           } , function(err){
-                           alert("eror");
-                           });
-    }
-    //openrooms
-    function openrooms(){
-        //action: "open"|"close"
-        var pack = { channel:$("#xchannel").val() , action:"open" };
-        wechat.openrooms( pack );
-    }
-    //closerooms
-    function closerooms(){
-        //action: "open"|"close"
-        var pack = { channel:$("#xchannel").val(), action:"close" };
-        wechat.openrooms( pack );
-    }
-    function getOpenRooms(){
-        var pack = { channel:$("#xchannel").val() , from: "u001" };
-        wechat.getOpenRooms( pack , function(obj){
-                            console.log(obj);
-                            for (var i=0 ; i< obj.data.length ; i++){
-                            console.log( obj.data[i].sid );
-                            console.log( obj.data[i].starttime );
-                            console.log( obj.data[i].endtime );
+        <hr>
+        tid:<input type="text" id="xtid"  value="u002">
+            channel:<input type="text" id="xchannel" value="u002@u001">
+                data:<input type="text" id="xmsg" value="mymessage">
+                    <hr>
+                    
+                    <button type="button" onclick="multiSubscribe()">multiSubscribe</button>
+                    <button type="button" onclick="multiUnSubscribe()">multiUnSubscribe</button>
+                    
+                    <button type="button" onclick="openrooms()" >openrooms</button>
+                    <button type="button" onclick="closerooms()" >closerooms</button>
+                    <button type="button" onclick="getOpenRooms()" >getOpenRooms</button>
+                    
+                    <button type="button" onclick="send()">send</button>
+                    <button type="button" onclick="sendGroup()">sendGroup</button>
+                    <button type="button" onclick="undelivered()">undelivered</button>
+                    <button type="button" onclick="querydbdate()">querydbdate</button>
+                    <button type="button" onclick="delChatHistory()" >delChatHistory</button>
+                    
+                    <button type="button" onclick="getOnLineUsers()" >getOnLineUsers</button>
+                    <button type="button" onclick="crudTsFlag()" >crudTsFlag</button>
+                    <button type="button" onclick="crudNews()" >crudNews</button>
+                    <button type="button" onclick="resetdb()" >resetdb</button>
+                    
+                    <button type="button" onclick="myclear()">myclear</button>
+                    <button type="button" onclick="mytest()">mytest</button>
+                    
+                    <div id="message"></div>
+                    
+                    <script type="text/javascript" src="js/jquery.min.js"></script>
+                    <script type="text/javascript" src="cordova.js"></script>
+                    <script type="text/javascript" src="js/index.js"></script>
+                    <script type="text/javascript">
+                        document.addEventListener("deviceready", onDeviceReady, false);
+                        function onDeviceReady() {
+                            window.addEventListener("wechatevent", OnEBusEvent, false);
+                        };
+                    
+                    function OnEBusEvent( obj ){  //JSONObject
+                        console.log("OnEBusEvent");
+                    };
+                    function msgCallback(obj){
+                        console.log(obj);
+                        for (var i=0; i < obj.data.length; i++){
+                            $("#message").append("<p>" + obj.data[i].data + "</p>");
+                        }
+                    }
+                    //unreaded
+                    function wechatOnUnReadChat(obj){
+                        //console.log( obj  )
+                        for (var i=0; i< obj.data.length ; i++){
+                            console.log(obj.data[i])
+                        }
+                    }
+                    // only one shoot
+                    function wechatOnUnReadChatInit( obj ){
+                        //console.log( obj  )
+                        for (var i=0; i< obj.data.length ; i++){
+                            console.log(obj.data[i])
+                        }
+                    }
+                    function saveChatSettings(){
+                        var conf = { serverip: "",
+                            port: 0,
+                            notifyTarget: "",
+                            hasNotify: 1,
+                            notifyTitle: "",
+                            notifyTicker: "",
+                            hasVibrate: 0,
+                            hasSound: 0,
+                            hasSaveEl: 1 ,
+                            key: "1234567890mobile" ,
+                            fontSize: 16
+                        };
+                        
+                        wechat.saveChatSettings( conf , function(err){
+                                                alert("error");
+                                                });
+                    }
+                    //getChatSettings
+                    function getChatSettings(){
+                        wechat.getChatSettings( function( data ){
+                            console.log( data );
+                        });
+                    }
+                    function initConn(){
+                        wechat.initConn()
+                    }
+                    //connect
+                    function connect(){
+                        wechat.connect();
+                    }
+                    //disconnect
+                    function disconnect(){
+                        wechat.disconnect();
+                    }
+                    //multiSubscribe
+                    function multiSubscribe(){
+                        var pack = {multichanns:[{channel:"u002@u001"},
+                                                 {channel:"u003@u002"},
+                                                 {channel:$("#xchannel").val() }]};
+                        wechat.multiSubscribe(pack);
+                    }
+                    
+                    function multiUnSubscribe(){
+                        var pack = {multichanns:[{channel:"u002@u001"},
+                                                 {channel:"u003@u002"},
+                                                 {channel:$("#xchannel").val() }]};
+                        wechat.multiUnSubscribe(pack);
+                    }
+                    
+                    function send(){
+                        var pack = {channel:"u002@u001",
+                            device:"desktop|mobile",
+                            action:"send",
+                            tid:$("#xtid").val(),
+                            data: $("#xmsg").val() };
+                        wechat.send(pack);
+                    }
+                    function sendGroup(){
+                        var pack = {device:"desktop|mobile",
+                            channel: $("#xchannel").val(),
+                            tid: $("#xtid").val(),
+                            gid: "g0002",
+                            action:"send",
+                            category:"user",
+                            data: $("#xmsg").val() };
+                        wechat.send(pack);
+                    }
+                    function multiRegister(){
+                        //only action:"insert|update|delete|deleteall"
+                        var obj = { action:"deleteall"}
+                        
+                        var obj2 = { action: "insert",m_id: "u001",
+                            custom_name:"alex02", corps: -1, updated_time:"1495430981548"} ;
+                        
+                        var obj3 = { action: "insert" ,m_id: "u002", custom_name:"alex03"} ;
+                        
+                        var obj4 = { action: "insert" ,m_id: "u003", custom_name:"alex04" } ;
+                        
+                        //group
+                        var obj5 = { action: "insert" ,m_id: "g001",isgroup: 1, custom_name:"mygroup01"} ;
+                        var obj6 = { action: "insert" ,m_id: "g002",isgroup: 1, custom_name:"mygroup02" } ;
+                        
+                        var pack = [ obj , obj2 , obj3 , obj4, obj5, obj6] ;
+                        
+                        wechat.multiRegister( pack , function(){ alert("error")})
+                    }
+                    //getOwner
+                    function getOwner(){
+                        wechat.getOwner( function(data){
+                                        console.log( data )
+                                        });
+                    }
+                    
+                    //existOwner
+                    function existOwner(){
+                        //true:owner in , false:without owner
+                        wechat.existOwner( function( hasowner ){
+                            console.log(hasowner);
+                        });
+                    };
+                    //getContacts
+                    function getContacts(){
+                        wechat.getContacts( function(data){
+                            console.log(data)
+                        });
+                    }
+                    //undeliverd
+                    function undelivered(){
+                        wechat.undelivered(function( obj ){
+                            for(var i=0 ; i < obj.data.length;i++){
+                                           //console.log(  obj.data[i] );
+                                           var pack = {"cid": obj.data[i].cid ,
+                                           "channel":obj.data[i].channel,
+                                           "device":"desktop|mobile",
+                                           "action": obj.data[i].action,
+                                           "sid":obj.data[i].sid,
+                                           "tid":obj.data[i].tid,
+                                           "gid":obj.data[i].gid,
+                                           "corps":obj.data[i].corps,
+                                           "category":obj.data[i].category,
+                                           "data":obj.data[i].data,
+                                           };
+                                           
+                                           wechat.send(pack);
                             }
-                            });
-    }
-    //onlines
-    function getOnLineUsers(){
-        var users = [] ;
-        
-        var user00 = { sid: "u001"};
-        users.push( user00);
-        
-        var user01 = { sid: "u002"};
-        users.push( user01) ;
-        
-        var pack = { data: users };
-        wechat.getOnLineUsers( pack , function(obj){
-                              console.log( pack  );
-                              });
-    }
-    //crudNews
-    function crudNews(){
-        //insert
-        var mydata = [ { title:"mytitle0", content:"mycontent0" , created_time:"1478486744549"},
-                      { title:"mytitle1", content:"mycontent1" , created_time:"1478486744555"}];
-                      
-                      var pack = { action:"insert" ,data: mydata};
-                      wechat.crudNews( pack , function(){
-                                      console.log("success");
-                                      });
+                        });
+                    }
+                    //querydbdate
+                    function querydbdate(){
+                        var pack = { channel:$("#xchannel").val() ,offset:0, limit:10 };
+                        console.log(pack);
+                        wechat.querydbdate( pack , function(data){
+                                           console.log( data );
+                                           } , function(err){
+                                           alert("eror");
+                                           });
+                    }
+                    
+                    //delChatHistory
+                    function delChatHistory(){
+                        //var pack = { cid:"uxxxx12344543534534" | channel:"u002@u001"} ;
+                        var pack = { cid:"u0011498612080650"} ;
+                            wechat.del_chat_history( pack , function(data){
+                                console.log( data );
+                                alert("delete success");
+                        });
+                    }
+                    //openrooms
+                    function openrooms(){
+                        //action: "open"|"close"
+                        var pack = { channel:$("#xchannel").val() , action:"open" };
+                        wechat.openrooms( pack );
+                    }
+                    //closerooms
+                    function closerooms(){
+                        //action: "open"|"close"
+                        var pack = { channel:$("#xchannel").val(), action:"close" };
+                        wechat.openrooms( pack );
+                    }
+                    function getOpenRooms(){
+                        var pack = { channel:$("#xchannel").val() , from: "u001" };
+                        wechat.getOpenRooms( pack , function(obj){
+                                console.log(obj);
+                                for (var i=0 ; i< obj.data.length ; i++){
+                                            console.log( obj.data[i].sid );
+                                            console.log( obj.data[i].starttime );
+                                            console.log( obj.data[i].endtime );
+                                }
+                        });
+                    }
+                    //onlines
+                    function getOnLineUsers(){
+                        var users = [] ;
+                        
+                        var user00 = { sid: "u001"};
+                        users.push( user00);
+                        
+                        var user01 = { sid: "u002"};
+                        users.push( user01) ;
+                        
+                        var pack = { data: users };
+                        wechat.getOnLineUsers( pack , function(obj){
+                            console.log( pack  );
+                        });
+                    }
+                    //crudNews
+                    function crudNews(){
+                        //insert
+                        var mydata = [ { title:"mytitle0", content:"mycontent0" , created_time:"1478486744549"},
+                                      { title:"mytitle1", content:"mycontent1" , created_time:"1478486744555"}];
                                       
-                                      //query
-                                      var pack = { action:"query", offset:0, limit:10 };
-                                      wechat.crudNews(pack , function(obj){
-                                                      console.log( obj );
-                                                      });
-    }
-    //crudTsFlag
-    function crudTsFlag(){
-        //update|insert
-        var mydata = [ ]
-        var pack = { action:"update" ,flag:"news" , ts:"1234567890123"};
-        wechat.crudTsFlag( pack , function(obj){
-                          console.log("ok");
-                          });
-                          
-                          //query
-                          var pack = { action:"query",flag:"news"};
-                          wechat.crudTsFlag(pack , function(obj){
-                                            console.log( obj );
-                                            });
-    }
-    //clear db
-    function resetdb(){
-        var pack = { db: "ChatHistory|Contacts|OpenRooms|ChatNews|ChatTsFlag"};
-        
-        wechat.resetdb( pack , function(data){
-                       console.log( data );
-                       });
-    }
-    //clear db && variable
-    function clearall(){
-        //reset db
-        resetdb()
-        
-        //clear
-        wechat.clear()
-    }
-    
-    //myclear
-    function myclear(){
-        $("#message").empty();
-    }
-    
-    //test
-    function mytest(){
-        wechat.test()
-    }
-
-</script>
-</body>
+                        var pack = { action:"insert" ,data: mydata};
+                        wechat.crudNews( pack , function(){
+                                console.log("success");
+                        });
+                                                      
+                                                      //query
+                        var pack = { action:"query", offset:0, limit:10 };
+                        wechat.crudNews(pack , function(obj){
+                                console.log( obj );
+                        });
+                    }
+                    //crudTsFlag
+                    function crudTsFlag(){
+                        //update|insert
+                        var mydata = [ ]
+                        var pack = { action:"update" ,flag:"news" , ts:"1234567890123"};
+                        wechat.crudTsFlag( pack , function(obj){
+                            console.log("ok");
+                        });
+                                          
+                        //query
+                        var pack = { action:"query",flag:"news"};
+                        wechat.crudTsFlag(pack , function(obj){
+                            console.log( obj );
+                        });
+                    }
+                    //clear db
+                    function resetdb(){
+                        var pack = { db: "ChatHistory|Contacts|OpenRooms|ChatNews|ChatTsFlag"};
+                        
+                        wechat.resetdb( pack , function(data){
+                            console.log( data );
+                        });
+                    }
+                    //clear db && variable
+                    function clearall(){
+                        //reset db
+                        resetdb()
+                        
+                        //clear
+                        wechat.clear()
+                    }
+                    
+                    //myclear
+                    function myclear(){
+                        $("#message").empty();
+                    }
+                    
+                    //test
+                    function mytest(){
+                        wechat.test()
+                    }
+                    </script>
+    </body>
 </html>

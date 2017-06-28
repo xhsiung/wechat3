@@ -66,6 +66,11 @@ querydbdate
 wechat.querydbdate();
 ```
 
+del_chat_history
+```
+wechat.del_chat_history(args,successCallback);
+```
+
 multiRegister
 ```
 wechat.multiRegister(args,errorCallback)
@@ -178,6 +183,7 @@ data:<input type="text" id="xmsg" value="mymessage">
 <button type="button" onclick="sendGroup()">sendGroup</button>
 <button type="button" onclick="undelivered()">undelivered</button>
 <button type="button" onclick="querydbdate()">querydbdate</button>
+<button type="button" onclick="delChatHistory()" >delChatHistory</button>
 
 <button type="button" onclick="getOnLineUsers()" >getOnLineUsers</button>
 <button type="button" onclick="crudTsFlag()" >crudTsFlag</button>
@@ -350,6 +356,17 @@ data:<input type="text" id="xmsg" value="mymessage">
                                 alert("eror");
                            });
     }
+
+    //delChatHistory
+    function delChatHistory(){
+         //var pack = { cid:"uxxxx12344543534534" | channel:"u002@u001"} ;
+         var pack = { cid:"u0011498612080650"} ;
+         wechat.del_chat_history( pack , function(data){
+             console.log( data );
+             alert("delete success");
+         });
+    }
+
     //openrooms
     function openrooms(){
         //action: "open"|"close"

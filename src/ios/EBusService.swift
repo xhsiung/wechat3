@@ -47,11 +47,30 @@ class EBusService : NSObject{
         }
     }
     
+    func Connect() -> Void {
+        let userDefault = UserDefaults.standard
+        let serverip = userDefault.object(forKey: "serverip")
+        let port = userDefault.object(forKey: "port")
+        
+        if userDefault.object(forKey: "serverip") == nil || userDefault.object(forKey: "port") == nil {
+            return
+        }
+        
+        if socket == nil {
+            let url = URL(string: "http://\(serverip):\(port)")
+            //socket = SocketIOClient(socketURL: url!, config: [.log(true), .forcePolling(true)])
+            socket = SocketIOClient(socketURL: url!, config: [ .forcePolling(true)])
+            addHandlers()
+            socket?.connect()
+        }
+        
+    }
+    
     func DisConnect() -> Void {
-        if socket?.status == SocketIOClientStatus.connected{
+        //if socket?.status == SocketIOClientStatus.connected{
             socket?.disconnect()
             socket = nil
-        }
+        //}
     }
     
     //data array obj

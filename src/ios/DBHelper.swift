@@ -636,12 +636,13 @@ class DBHelper {
     
     
     func getOwner() -> JSON{
-        print("DBHelper getOwner")
+        
         if DBHelper.OWNER.dictionary!.count != 0 {
             return DBHelper.OWNER
         }
         
         ContactsDB = ( ContactsDB == nil ) ? getContacts() : ContactsDB
+       
         
         for user in (ContactsDB!["data"].array)! {
             //owner

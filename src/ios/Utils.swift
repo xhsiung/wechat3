@@ -213,8 +213,8 @@ class Utils {
     func saveSettings(obj:JSON) -> Void {
         let userDefault = UserDefaults.standard
 
-        userDefault.set( (obj["serverip"].exists() ? obj["serverip"].stringValue : nil), forKey: "serverip")
-        userDefault.set( obj["port"].exists() ? obj["port"].intValue : nil, forKey: "port")
+        userDefault.set( obj["serverip"].exists() ? obj["serverip"].stringValue : "wechat.bais.com.tw", forKey: "serverip")
+        userDefault.set( obj["port"].exists() ? obj["port"].intValue : 3002, forKey: "port")
         
         userDefault.set( obj["notifyTarget"].exists() ? obj["notifyTarget"].stringValue:"", forKey: "notifyTarget")
         userDefault.set( obj["hasNotify"].exists() ? obj["hasNotify"].int64:0, forKey: "hasNotify")

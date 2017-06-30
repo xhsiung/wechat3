@@ -72,6 +72,13 @@ import Alamofire
     
     //reconnected to connect
     func socketConnectCallback(){
+        if firstConn == 5 {
+            self.ebus?.DisConnect()
+            self.ebus?.Connect()
+            firstConn = 1
+            return 
+        }
+        
         if firstConn > 0 {
             print("socketConnectCallback connect")
             self.initConn( self.cmd! )

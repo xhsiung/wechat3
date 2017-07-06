@@ -49,11 +49,9 @@ class Utils {
             //owner
             if user["corps"] == -1 {
                 jsonArr.append( JSON(["channel": user["m_id"].stringValue,"device":"mobile"]) )
-                continue
-            }
             
             //person
-            if user["isgroup"] == 0 {
+            }else if user["isgroup"] == 0 {
                 let inviteChann = Utils.getInviteChann(sid: owner!["m_id"].stringValue, tid: user["m_id"].stringValue)
                 jsonArr.append( JSON(["channel": inviteChann,"device":"mobile"]) )
                 

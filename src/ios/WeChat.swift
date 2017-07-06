@@ -182,8 +182,8 @@ import Alamofire
     @objc(send:)
     func send(_ command: CDVInvokedUrlCommand){
         var jdata = JSON(command.arguments[0])
-        //undeliver
         
+        //undeliver
         if jdata["cid"].exists() && !jdata["cid"].isEmpty {
             DispatchQueue.global().async {
                 self.ebus!.Send(data: jdata)
@@ -191,8 +191,6 @@ import Alamofire
         }else {
             DispatchQueue.global().async {
                 jdata = self.dbhelper!.getDefaultChatHistory(data: jdata)
-                print(jdata)
-                
                 let _ = self.dbhelper!.insertChatHistory(data: jdata)
                 self.ebus!.Send(data: jdata)
             }

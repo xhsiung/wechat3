@@ -56,7 +56,7 @@ class Utils {
                 
                 //group
             }else if user["isgroup"] == 1 {
-                jsonArr.append( JSON(["channel": user["channel"].stringValue,"device":"mobile"]) )
+                jsonArr.append( JSON(["channel": user["m_id"].stringValue,"device":"mobile"]) )
             }
         }
         
@@ -190,19 +190,15 @@ class Utils {
     func restContactsAdd() {
         let jsonPack = getContactsPackJson()
         let resturl = "\(getServerURL())/contacts/add"
-        print(resturl)
-        
         DispatchQueue.global().async {
             Alamofire.request( resturl,method:.post
                 ,parameters:jsonPack.dictionary! ,headers:["Accept": "application/json"]).responseJSON { response in
                 //debugPrint(response)
                 //var jobj = JSON(["data":[:] ])
-                
                 switch response.result {
                 case .success(let value):
                     let _ = JSON(value)
                     print("restContactsAdd scucess")
-                    
                 case .failure(let error):
                     print(error)
                 }

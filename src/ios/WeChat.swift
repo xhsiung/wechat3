@@ -39,7 +39,7 @@ import Alamofire
     
     //receive message
     func msgCallback(data: JSON) {
-        print("msgCallback")
+
         DispatchQueue.global().async {
             //update
             self.commandDelegate!.evalJs("msgCallback(\(data))")
@@ -183,14 +183,16 @@ import Alamofire
     func send(_ command: CDVInvokedUrlCommand){
         var jdata = JSON(command.arguments[0])
         //undeliver
-        if jdata["cid"].exists() {
+        
+        if jdata["cid"].exists() && !jdata["cid"].isEmpty {
             DispatchQueue.global().async {
                 self.ebus!.Send(data: jdata)
             }
-            
         }else {
             DispatchQueue.global().async {
                 jdata = self.dbhelper!.getDefaultChatHistory(data: jdata)
+                print(jdata)
+                
                 let _ = self.dbhelper!.insertChatHistory(data: jdata)
                 self.ebus!.Send(data: jdata)
             }
@@ -323,7 +325,6 @@ import Alamofire
     func getOnLineUsers(_ command: CDVInvokedUrlCommand){
         var jdata = JSON(command.arguments[0])
         let resturl = "\(utils!.getServerURL())/xonlineusers"
-        
         DispatchQueue.global().async {
             Alamofire.request(resturl , method:.post , parameters: jdata.dictionaryObject!,encoding: JSONEncoding.default).responseJSON { response in
                 //debugPrint(response)

@@ -69,7 +69,6 @@ class DBHelper {
     let contactsGlastUpdatedTime = Expression<String>("glast_updated_time")
     let contactsOthers = Expression<String>("others")
     
-    
     //ChatSyncsTS Table
     let tbChatSyncs = Table("ChatSyncsTS")
     let chatsyncAction  = Expression<String>("action") //primary key
@@ -1025,7 +1024,9 @@ class DBHelper {
         let xcid = Utils.getCID(sid: xsid)
         
         let device = data["device"].exists() ? data["device"].stringValue : "mobile"
-        let cid = data["cid"].exists() ? data["cid"].stringValue : xcid
+        var cid = data["cid"].exists() ? data["cid"].stringValue : xcid
+        if cid.isEmpty { cid = xcid }
+        
         let channel = data["channel"].exists() ? data["channel"].stringValue : ""
         let action = data["action"].exists() ? data["action"].stringValue : ""
         let sid = data["sid"].exists() ? data["sid"].stringValue : xsid

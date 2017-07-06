@@ -57,8 +57,7 @@ class EBusService : NSObject{
         }
         
         if socket == nil {
-            let url = URL(string: "http://\(serverip):\(port)")
-            //socket = SocketIOClient(socketURL: url!, config: [.log(true), .forcePolling(true)])
+            let url = URL(string: "http://\(serverip):\(String(describing: port))")            //socket = SocketIOClient(socketURL: url!, config: [.log(true), .forcePolling(true)])
             socket = SocketIOClient(socketURL: url!, config: [ .forcePolling(true)])
             addHandlers()
             socket?.connect()
@@ -91,6 +90,9 @@ class EBusService : NSObject{
     //data obj
     func Send(data:JSON) -> Void{
         if socket?.status == SocketIOClientStatus.connected {
+            print("send---------------->")
+            print( data.rawString()! )
+            
             socket?.emit("send", with: [ data.rawString()! ])
             print(data.rawString()!)
         }
@@ -116,6 +118,7 @@ class EBusService : NSObject{
     
     //add handler
     func addHandlers(){
+
         socket?.on(clientEvent: .connect, callback: { (data, ack) in
             print("conenct")
             self.delegate?.socketConnectCallback()
@@ -138,6 +141,7 @@ class EBusService : NSObject{
             print("got msg")
             let xdata = data[0] as! String
             
+            print( xdata )
             if let jsonStr = xdata.data(using: .utf8, allowLossyConversion: false) {
                 do{
                     let obj = try JSON(data: jsonStr)

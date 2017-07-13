@@ -71,19 +71,25 @@ import Alamofire
     
     
     //reconnected to connect
-    func socketConnectCallback(){
-        if firstConn == 5 {
+    func socketStatusChange(){
+        if firstConn == 3 {
+            self.ebus?.ispass = false
             self.ebus?.DisConnect()
             self.ebus?.Connect()
+            self.initConn( self.cmd! )
             firstConn = 1
+            self.ebus?.ispass = true
+            
+            print("WeChat socketStatusChange ReConnect")
             return 
         }
         
-        if firstConn > 0 {
-            print("socketConnectCallback connect")
-            self.initConn( self.cmd! )
-        }
+//        if firstConn > 0 {
+//            print("socketConnectCallback connect")
+//            self.initConn( self.cmd! )
+//        }
         firstConn += 1
+        print("WeChat socketStatusChange")
     }
     
     //saveChatSettings

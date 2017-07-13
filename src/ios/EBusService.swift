@@ -16,6 +16,8 @@ class EBusService : NSObject{
     var socket:SocketIOClient?
     var delegate: EBusDelegate?
     
+    var ispass = true
+    
     var lastMsgCid = ""
     
     static func getInstance() -> EBusService{
@@ -51,18 +53,22 @@ class EBusService : NSObject{
         let userDefault = UserDefaults.standard
         let serverip = userDefault.object(forKey: "serverip")
         let port = userDefault.object(forKey: "port")
-        
+
         if userDefault.object(forKey: "serverip") == nil || userDefault.object(forKey: "port") == nil {
             return
         }
         
         if socket == nil {
-            let url = URL(string: "http://\(serverip):\(String(describing: port))")            //socket = SocketIOClient(socketURL: url!, config: [.log(true), .forcePolling(true)])
+
+            let url = URL(string: "http://\(serverip!):\( String(describing: port!) )")
+            //socket = SocketIOClient(socketURL: url!, config: [.log(true), .forcePolling(true)])
             socket = SocketIOClient(socketURL: url!, config: [ .forcePolling(true)])
             addHandlers()
             socket?.connect()
         }
         
+        
+        print("EBusService Connect")
     }
     
     func DisConnect() -> Void {
@@ -70,6 +76,7 @@ class EBusService : NSObject{
             socket?.disconnect()
             socket = nil
         //}
+        print("EBusService DisConnect")
     }
     
     //data array obj
@@ -77,7 +84,7 @@ class EBusService : NSObject{
         if socket?.status == SocketIOClientStatus.connected {
             socket?.emit("multisubscribe", with: [ data.rawString()! ])
         }
-        
+        print("EBusService MultiSubscribe")
     }
     
     //data array obj
@@ -85,55 +92,57 @@ class EBusService : NSObject{
         if socket?.status == SocketIOClientStatus.connected {
             socket?.emit("multiunsubscribe", with: [ data.rawString()!])
         }
+        print("EBusService MultiUnSubscribe")
     }
     
     //data obj
     func Send(data:JSON) -> Void{
         if socket?.status == SocketIOClientStatus.connected {
-            print("send---------------->")
-            print( data.rawString()! )
             
             socket?.emit("send", with: [ data.rawString()! ])
             print(data.rawString()!)
         }
+        print("EBusService Send")
     }
     
     func exunread(data:JSON) -> Void {
         if socket?.status == SocketIOClientStatus.connected {
             socket?.emit("exunread", with: [ data.rawString()!])
         }
+        print("EBusService exunread")
     }
     
     func OpenRooms(data:JSON) -> Void {
         if socket?.status == SocketIOClientStatus.connected {
             socket?.emit("openrooms", with: [ data.rawString()!])
         }
+        print("EBusService OpenRooms")
     }
     
     func SendSignal(data:JSON) -> Void {
         if socket?.status == SocketIOClientStatus.connected {
             socket?.emit("signal", with: [ data.rawString()!])
         }
+        print("EBusService SendSignal")
     }
     
     //add handler
     func addHandlers(){
 
         socket?.on(clientEvent: .connect, callback: { (data, ack) in
-            print("conenct")
-            self.delegate?.socketConnectCallback()
+            print("EBusService Handlers conenct")
         })
         
         socket?.on(clientEvent: .disconnect, callback: { (data, ack) in
-            print("disconnect")
+            print("EBusService Handlers disconnect")
         })
         
         socket?.on(clientEvent: .error, callback: { (data, ack) in
-            print("error")
+            print("EBusService Handlers error")
         })
         
         socket?.on(clientEvent: .reconnect, callback: { (data, ack) in
-            print("reconnect")
+            print("EBusService Handlers reconnect")
         })
         
         
@@ -239,16 +248,20 @@ class EBusService : NSObject{
         })
         
         socket?.on("openroomsed", callback: { (data, ack) in
-            print("openroomsed")
+            print("EBuseSErvice Event openroomsed")
             
         })
         
         socket?.on("asked", callback: { (data, ack) in
-            print("asked")
+            print("EBuseSErvice Event asked")
         })
         
         socket?.on(clientEvent: .statusChange, callback: { (data, ack) in
-            print("statusChange")
+            print("EBuseSErvice Event statusChange")
+            
+            if self.ispass {
+                 self.delegate?.socketStatusChange()
+            }
         })
     }
     
@@ -278,13 +291,12 @@ class EBusService : NSObject{
     
     
     func actionInviteTask(data:JSON){
-        print("actionInviteTask")
+        print("EBuseSErvice actionInviteTask")
     }
     
     func actionNotifyTask(data:JSON) {
-        print("actionNotifyTask")
+        print("EBuseSErvice actionNotifyTask")
     }
-    
     
     deinit {
         removeHandler()

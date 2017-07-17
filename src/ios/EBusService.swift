@@ -60,10 +60,9 @@ class EBusService : NSObject{
         }
         
         if socket == nil {
-
             let url = URL(string: "http://\(serverip!):\( String(describing: port!) )")
             //socket = SocketIOClient(socketURL: url!, config: [.log(true), .forcePolling(true)])
-            socket = SocketIOClient(socketURL: url!, config: [ .forcePolling(true)])
+            socket = SocketIOClient(socketURL: url!, config: [ .forcePolling(true), .forceNew(true)])
             addHandlers()
             socket?.connect()
         }

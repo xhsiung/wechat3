@@ -148,6 +148,9 @@ class EBusService : NSObject{
             DispatchQueue.global().asyncAfter(deadline: .now() + .milliseconds(2000), execute: {
                 let multichanns = self.utils!.getMultiChanns()
                 self.MultiSubscribe(data: multichanns )
+		
+		let signalpack = self.utils?.getSignalPack()
+                self.SendSignal(data: signalpack! )
             })
         })
         

@@ -6,7 +6,6 @@ import Alamofire
     var utils:Utils?
     static var roomName = ""
     var cmd:CDVInvokedUrlCommand?
-    var firstConn = 0
     
     //init process
     override func pluginInitialize(){
@@ -16,6 +15,7 @@ import Alamofire
         utils = Utils.getInstance()
         ebus!.delegate = self
         ebus!.dbhelper = dbhelper
+        ebus!.utils = utils
         
         utils!.dbhelper = dbhelper
         utils!.ebus = ebus
@@ -71,25 +71,8 @@ import Alamofire
     
     
     //reconnected to connect
-    func socketStatusChange(){
-        if firstConn == 3 {
-            self.ebus?.ispass = false
-            self.ebus?.DisConnect()
-            self.ebus?.Connect()
-            self.initConn( self.cmd! )
-            firstConn = 1
-            self.ebus?.ispass = true
-            
-            print("WeChat socketStatusChange ReConnect")
-            return 
-        }
-        
-//        if firstConn > 0 {
-//            print("socketConnectCallback connect")
-//            self.initConn( self.cmd! )
-//        }
-        firstConn += 1
-        print("WeChat socketStatusChange")
+    func socketReconnect(){
+        print("WeChat socketReconnect")
     }
     
     //saveChatSettings
@@ -135,14 +118,14 @@ import Alamofire
             self.ebus?.SendSignal(data: signalpack! )
             
             //cloud contacts add
-             self.utils?.restContactsAdd()
+            self.utils?.restContactsAdd()
             
             //unread updatedb
             let unreadpack = self.utils?.getUnreadPackJson()
             self.ebus?.exunread(data: unreadpack!)
             
         })
-        
+
     }
     
     

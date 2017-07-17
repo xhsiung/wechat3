@@ -15,6 +15,7 @@ class EBusService : NSObject{
     var dbhelper:DBHelper?
     var socket:SocketIOClient?
     var delegate: EBusDelegate?
+    var utils:Utils?
     
     var ispass = true
     
@@ -43,7 +44,7 @@ class EBusService : NSObject{
             let url = URL(string: "http://\(serverip):\(port)")
             
             //socket = SocketIOClient(socketURL: url!, config: [.log(true), .forcePolling(true)])
-            socket = SocketIOClient(socketURL: url!, config: [ .forcePolling(true)])
+            socket = SocketIOClient(socketURL: url!, config: [ .forcePolling(true),.forceNew(true)])
             addHandlers()
             socket?.connect()
         }
@@ -143,6 +144,11 @@ class EBusService : NSObject{
         
         socket?.on(clientEvent: .reconnect, callback: { (data, ack) in
             print("EBusService Handlers reconnect")
+            //self.delegate?.socketReconnect()
+            DispatchQueue.global().asyncAfter(deadline: .now() + .milliseconds(2000), execute: {
+                let multichanns = self.utils!.getMultiChanns()
+                self.MultiSubscribe(data: multichanns )
+            })
         })
         
         
@@ -258,10 +264,6 @@ class EBusService : NSObject{
         
         socket?.on(clientEvent: .statusChange, callback: { (data, ack) in
             print("EBuseSErvice Event statusChange")
-            
-            if self.ispass {
-                 self.delegate?.socketStatusChange()
-            }
         })
     }
     

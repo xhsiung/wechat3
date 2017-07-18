@@ -1,5 +1,7 @@
+cordova.define("cordova-plugins-wechat.wechat", function(require, exports, module) {
    var WeChat = function(){
    var self = this;
+               
    self.channels = {
         wechatevent :cordova.addWindowEventHandler("wechatevent")
    };
@@ -77,8 +79,8 @@
    }
    
    //multiRegister
-   WeChat.prototype.multiRegister = function(arg0, errorCallback ){
-        cordova.exec( null , errorCallback , "WeChat", "multiRegister" , [arg0]);
+   WeChat.prototype.multiRegister = function(arg0, successCallback ){
+        cordova.exec( successCallback , null , "WeChat", "multiRegister" , [arg0]);
    }
    
    //getOwner
@@ -106,8 +108,9 @@
    //initConn
    WeChat.prototype.initConn = function(){
         cordova.exec( null , null , "WeChat", "initConn", []);
+        WeChat.count++;
    }
-   
+               
    //undelivered
    WeChat.prototype.undelivered = function(successCallback){
         cordova.exec( successCallback , null , "WeChat", "undelivered" , []);
@@ -172,3 +175,5 @@
    
    module.exports = new WeChat();
 
+
+});

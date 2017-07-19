@@ -542,7 +542,7 @@ class DBHelper {
                 let custom_name = user["custom_name"].stringValue
                 let peonums = user["peonums"].intValue
                 
-                let isgroup = gid.isEmpty ? false : true
+                let isgroup = gid.isEmpty ? 0 : 1
                 
                 //unreadrows
                 let sql2 = "SELECT count(*) FROM ChatHistory WHERE action='send' AND status=0 AND channel='\(channel)'"
@@ -578,7 +578,7 @@ class DBHelper {
             let offset = data["offset"].intValue
             let limit = data["limit"].intValue
             
-            let query = tbChatHistory.filter( chatHistoryAction == "send" && chatHistoryFlag == -1 && chatHistoryChannel == channel).order(chatHistoryUpdatedTime.desc).limit(limit , offset: offset)
+            let query = tbChatHistory.filter( chatHistoryAction == "send" && chatHistoryFlag == -1 && chatHistoryChannel == channel).order(chatHistoryUpdatedTime.asc).limit(limit , offset: offset)
             for row in try db!.prepare( query ){
                 jarr.append( JSON([ "cid": row[chatHistoryCid],
                                     "channel":row[chatHistoryChannel],

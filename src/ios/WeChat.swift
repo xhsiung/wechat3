@@ -194,11 +194,9 @@ import Alamofire
         
         DispatchQueue.global().async {
             let success = self.dbhelper!.operatorContacts(data: jdata)
-            if !success {
-                let pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR,messageAs: JSON(["success":false]).dictionaryObject!)
-                
-                self.commandDelegate!.send( pluginResult, callbackId: command.callbackId)
-            }
+            
+            let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK,messageAs: JSON(["success": success]).dictionaryObject!)
+            self.commandDelegate!.send( pluginResult, callbackId: command.callbackId)
         }
     }
     

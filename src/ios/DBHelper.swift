@@ -578,7 +578,7 @@ class DBHelper {
             let offset = data["offset"].intValue
             let limit = data["limit"].intValue
             
-            let query = tbChatHistory.filter( chatHistoryAction == "send" && chatHistoryFlag == -1 && chatHistoryChannel == channel).order(chatHistoryUpdatedTime.asc).limit(limit , offset: offset)
+            let query = tbChatHistory.filter( chatHistoryAction == "send" && chatHistoryFlag == -1 && chatHistoryChannel == channel).order(chatHistoryUpdatedTime.desc).limit(limit , offset: offset)
             for row in try db!.prepare( query ){
                 jarr.append( JSON([ "cid": row[chatHistoryCid],
                                     "channel":row[chatHistoryChannel],

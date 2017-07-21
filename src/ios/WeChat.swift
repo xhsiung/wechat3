@@ -16,7 +16,6 @@ import Alamofire
         ebus!.delegate = self
         ebus!.dbhelper = dbhelper
         ebus!.utils = utils
-        
         utils!.dbhelper = dbhelper
         utils!.ebus = ebus
     }
@@ -26,6 +25,7 @@ import Alamofire
     func start(_ command: CDVInvokedUrlCommand) {
         print("WeChat Start")
         self.cmd = command
+        self.msgUnReadInitDelaySend()
     }
     
     //test
@@ -34,7 +34,6 @@ import Alamofire
         print("WeChat test")
         //_ = self.dbhelper?.queryGroupChatHistory()
         utils?.restContactsAdd()
-        
     }
     
     //receive message
@@ -54,7 +53,7 @@ import Alamofire
     
     
     func msgUnReadCallback(data: JSON) {
-        print("msgUnReadCallback")
+        print("WeChat msgUnReadCallback")
         DispatchQueue.global().async {
             self.commandDelegate!.evalJs("wechatOnUnReadChat(\(data))")
         }
@@ -63,12 +62,19 @@ import Alamofire
     
     
     func msgUnReadInitCallback(data: JSON) {
-        print("msgUnReadInitCallback")
+        print("WeChat msgUnReadInitCallback")
         DispatchQueue.global().async {
             self.commandDelegate!.evalJs("wechatOnUnReadChatInit(\(data))")
         }
     }
     
+    func msgUnReadInitDelaySend(){
+        print("WeChat msgUnReadInitDelaySend")
+        DispatchQueue.global().asyncAfter(deadline: .now() + .milliseconds(3000), execute: {
+            let jobj = self.dbhelper?.queryGroupChatHistory()
+            self.commandDelegate!.evalJs("wechatOnUnReadChatInit(\(jobj))")
+        })
+    }
     
     //reconnected to connect
     func socketReconnect(){

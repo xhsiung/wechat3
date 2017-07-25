@@ -853,7 +853,7 @@ class DBHelper {
             let offset = data["offset"].intValue
             let limit = data["limit"].intValue
             
-            let query = tbChatNews.order(chatnewsCreatedTime.asc).limit(limit, offset: offset)
+            let query = tbChatNews.order(chatnewsCreatedTime.desc).limit(limit, offset: offset)
             
             for row in try db!.prepare( query ) {
                 jarr.append( JSON([ "id": row[ chatnewsId ],

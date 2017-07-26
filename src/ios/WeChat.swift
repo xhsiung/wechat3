@@ -6,6 +6,7 @@ import Alamofire
     var utils:Utils?
     static var roomName = ""
     var cmd:CDVInvokedUrlCommand?
+    var isUnreadInit:Bool = false
     
     //init process
     override func pluginInitialize(){
@@ -57,12 +58,12 @@ import Alamofire
         DispatchQueue.global().async {
             self.commandDelegate!.evalJs("wechatOnUnReadChat(\(data))")
         }
-        
     }
     
     
     func msgUnReadInitCallback(data: JSON) {
         print("WeChat msgUnReadInitCallback")
+        isUnreadInit = true
         DispatchQueue.global().async {
             self.commandDelegate!.evalJs("wechatOnUnReadChatInit(\(data))")
         }
@@ -70,7 +71,8 @@ import Alamofire
     
     func msgUnReadInitDelaySend(){
         print("WeChat msgUnReadInitDelaySend")
-        DispatchQueue.global().asyncAfter(deadline: .now() + .milliseconds(3000), execute: {
+        DispatchQueue.global().asyncAfter(deadline: .now() + .milliseconds(5000), execute: {
+            if self.isUnreadInit { return }
             let jobj = self.dbhelper?.queryGroupChatHistory()
             self.commandDelegate!.evalJs("wechatOnUnReadChatInit(\(jobj!))")
         })
@@ -133,7 +135,6 @@ import Alamofire
         })
 
     }
-    
     
     
     //connect

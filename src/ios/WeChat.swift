@@ -72,7 +72,7 @@ import Alamofire
         print("WeChat msgUnReadInitDelaySend")
         DispatchQueue.global().asyncAfter(deadline: .now() + .milliseconds(3000), execute: {
             let jobj = self.dbhelper?.queryGroupChatHistory()
-            self.commandDelegate!.evalJs("wechatOnUnReadChatInit(\(jobj))")
+            self.commandDelegate!.evalJs("wechatOnUnReadChatInit(\(jobj!))")
         })
     }
     

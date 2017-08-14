@@ -288,10 +288,11 @@ import Alamofire
     @objc(getOpenRooms:)
     func getOpenRooms(_ command: CDVInvokedUrlCommand){
         var jdata = JSON(command.arguments[0])
+
+        let sid = jdata["from"].exists() ? jdata["from"].stringValue : "togroup"
         
-        let sid = jdata["from"].stringValue
         let channel = jdata["channel"].stringValue
-        let resturl = "\(utils!.getServerURL())/\(sid)/\(channel)"
+        let resturl = "\(utils!.getServerURL())/xopenrooms/\(sid)/\(channel)"
         
         DispatchQueue.global().async {
             Alamofire.request( resturl ,headers:["Accept": "application/json"]).responseJSON { response in

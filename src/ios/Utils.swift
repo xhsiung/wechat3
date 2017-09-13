@@ -21,8 +21,12 @@ class Utils {
     }
     
     static func getInviteChann(sid:String,tid:String) -> String {
+        if ( sid == tid ) {
+            return "\(sid)@\(sid)"
+        }
         let max = (sid > tid) ? sid : tid
         let min = (sid < tid) ? sid : tid
+        
         return "\(max)@\(min)"
     }
     
@@ -41,14 +45,17 @@ class Utils {
         let owner = dbhelper?.getOwner()
         
         var contactsDB = dbhelper!.getContacts()
-        
         var jsonArr = [JSON]()
-        jsonArr.append( JSON( ["channel": owner!["m_id"].stringValue , "device":"mobile"] )  )
         
         for user in ( contactsDB["data"].array)! {
             //ignore owner
             if user["corps"] == -1 {
+                //owner chann01
                 jsonArr.append( JSON(["channel": user["m_id"].stringValue,"device":"mobile"]) )
+                
+                //owner chann02
+                let ownerChann = Utils.getInviteChann(sid: owner!["m_id"].stringValue,tid:owner!["m_id"].stringValue)
+                jsonArr.append( JSON(["channel": ownerChann,"device":"mobile"]) )
                 
             }else if user["isgroup"] == 0 {
                 let inviteChann = Utils.getInviteChann(sid: owner!["m_id"].stringValue, tid: user["m_id"].stringValue)

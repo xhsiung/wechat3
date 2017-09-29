@@ -190,13 +190,22 @@ class Utils {
     
     func getServerURL() -> String {
         let settings = getSettings()
-        return "http://\(settings["serverip"].stringValue):\(settings["port"].intValue)"
+        let xhttp = settings["protocol"].stringValue
+        
+        var url = ""
+        if  xhttp == "https" {
+            url = "https://\(settings["serverip"].stringValue)"
+        }else if xhttp == "http" {
+            url = "http://\(settings["serverip"].stringValue):\(settings["port"].intValue)"
+        }
+        return url
     }
     
     
     func restContactsAdd() {
         let jsonPack = getContactsPackJson()
         let resturl = "\(getServerURL())/contacts/add"
+        
         DispatchQueue.global().async {
             Alamofire.request( resturl,method:.post
                 ,parameters:jsonPack.dictionary! ,headers:["Accept": "application/json"]).responseJSON { response in

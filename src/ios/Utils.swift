@@ -21,8 +21,12 @@ class Utils {
     }
     
     static func getInviteChann(sid:String,tid:String) -> String {
+        if ( sid == tid ) {
+            return "\(sid)@\(sid)"
+        }
         let max = (sid > tid) ? sid : tid
         let min = (sid < tid) ? sid : tid
+        
         return "\(max)@\(min)"
     }
     
@@ -41,14 +45,17 @@ class Utils {
         let owner = dbhelper?.getOwner()
         
         var contactsDB = dbhelper!.getContacts()
-        
         var jsonArr = [JSON]()
-        jsonArr.append( JSON( ["channel": owner!["m_id"].stringValue , "device":"mobile"] )  )
         
         for user in ( contactsDB["data"].array)! {
             //ignore owner
             if user["corps"] == -1 {
+                //owner chann01
                 jsonArr.append( JSON(["channel": user["m_id"].stringValue,"device":"mobile"]) )
+                
+                //owner chann02
+                let ownerChann = Utils.getInviteChann(sid: owner!["m_id"].stringValue,tid:owner!["m_id"].stringValue)
+                jsonArr.append( JSON(["channel": ownerChann,"device":"mobile"]) )
                 
             }else if user["isgroup"] == 0 {
                 let inviteChann = Utils.getInviteChann(sid: owner!["m_id"].stringValue, tid: user["m_id"].stringValue)
@@ -183,13 +190,22 @@ class Utils {
     
     func getServerURL() -> String {
         let settings = getSettings()
-        return "http://\(settings["serverip"].stringValue):\(settings["port"].intValue)"
+        let xhttp = settings["protocol"].stringValue
+        
+        var url = ""
+        if  xhttp == "https" {
+            url = "https://\(settings["serverip"].stringValue)"
+        }else if xhttp == "http" {
+            url = "http://\(settings["serverip"].stringValue):\(settings["port"].intValue)"
+        }
+        return url
     }
     
     
     func restContactsAdd() {
         let jsonPack = getContactsPackJson()
         let resturl = "\(getServerURL())/contacts/add"
+        
         DispatchQueue.global().async {
             Alamofire.request( resturl,method:.post
                 ,parameters:jsonPack.dictionary! ,headers:["Accept": "application/json"]).responseJSON { response in
@@ -211,6 +227,7 @@ class Utils {
 
         userDefault.set( obj["serverip"].exists() ? obj["serverip"].stringValue : "wechat.bais.com.tw", forKey: "serverip")
         userDefault.set( obj["port"].exists() ? obj["port"].intValue : 3002, forKey: "port")
+        userDefault.set( obj["protocol"].exists() ? obj["protocol"].stringValue : "http", forKey: "protocol")
         
         userDefault.set( obj["notifyTarget"].exists() ? obj["notifyTarget"].stringValue:"", forKey: "notifyTarget")
         userDefault.set( obj["hasNotify"].exists() ? obj["hasNotify"].int64:0, forKey: "hasNotify")
@@ -232,6 +249,7 @@ class Utils {
         
         let serverip = userDefault.object(forKey: "serverip") as! String
         let port = userDefault.object(forKey: "port") as! Int64
+        let xhttp = userDefault.object(forKey: "protocol") as! String
         
         let notifyTarget = userDefault.object(forKey: "notifyTarget") as! String
         let hasNotify = userDefault.object(forKey: "hasNotify") as! Int64
@@ -245,6 +263,7 @@ class Utils {
         
         return JSON(["serverip":serverip,
                      "port":port,
+                     "protocol":xhttp,
                      "notifyTarget":notifyTarget,
                      "hasNotify":hasNotify,
                      "notifyTitle":notifyTitle,

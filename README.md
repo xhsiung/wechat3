@@ -229,6 +229,7 @@ data:<input type="text" id="xmsg" value="mymessage">
     function saveChatSettings(){
         var conf = { serverip: "",
             port: 0,
+	    protocol:"https",
             notifyTarget: "",
             hasNotify: 1,
             notifyTitle: "",
@@ -476,4 +477,4 @@ Done  work:
 
 ## History
 
-* **v1.0.0** : 2017-05-26
+* **v1.0.1** : 2017-09-13

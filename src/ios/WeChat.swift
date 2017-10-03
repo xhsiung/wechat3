@@ -6,7 +6,7 @@ import Alamofire
     var utils:Utils?
     static var roomName = ""
     var cmd:CDVInvokedUrlCommand?
-    var firstConn = 0
+    var isUnreadInit:Bool = false
     
     //init process
     override func pluginInitialize(){
@@ -16,7 +16,7 @@ import Alamofire
         utils = Utils.getInstance()
         ebus!.delegate = self
         ebus!.dbhelper = dbhelper
-        
+        ebus!.utils = utils
         utils!.dbhelper = dbhelper
         utils!.ebus = ebus
     }
@@ -26,6 +26,7 @@ import Alamofire
     func start(_ command: CDVInvokedUrlCommand) {
         print("WeChat Start")
         self.cmd = command
+        self.msgUnReadInitDelaySend()
     }
     
     //test
@@ -34,7 +35,6 @@ import Alamofire
         print("WeChat test")
         //_ = self.dbhelper?.queryGroupChatHistory()
         utils?.restContactsAdd()
-        
     }
     
     //receive message
@@ -54,42 +54,33 @@ import Alamofire
     
     
     func msgUnReadCallback(data: JSON) {
-        print("msgUnReadCallback")
+        print("WeChat msgUnReadCallback")
         DispatchQueue.global().async {
             self.commandDelegate!.evalJs("wechatOnUnReadChat(\(data))")
         }
-        
     }
     
     
     func msgUnReadInitCallback(data: JSON) {
-        print("msgUnReadInitCallback")
+        print("WeChat msgUnReadInitCallback")
+        isUnreadInit = true
         DispatchQueue.global().async {
             self.commandDelegate!.evalJs("wechatOnUnReadChatInit(\(data))")
         }
     }
     
+    func msgUnReadInitDelaySend(){
+        print("WeChat msgUnReadInitDelaySend")
+        DispatchQueue.global().asyncAfter(deadline: .now() + .milliseconds(5000), execute: {
+            if self.isUnreadInit { return }
+            let jobj = self.dbhelper?.queryGroupChatHistory()
+            self.commandDelegate!.evalJs("wechatOnUnReadChatInit(\(jobj!))")
+        })
+    }
     
     //reconnected to connect
-    func socketStatusChange(){
-        if firstConn == 3 {
-            self.ebus?.ispass = false
-            self.ebus?.DisConnect()
-            self.ebus?.Connect()
-            self.initConn( self.cmd! )
-            firstConn = 1
-            self.ebus?.ispass = true
-            
-            print("WeChat socketStatusChange ReConnect")
-            return 
-        }
-        
-//        if firstConn > 0 {
-//            print("socketConnectCallback connect")
-//            self.initConn( self.cmd! )
-//        }
-        firstConn += 1
-        print("WeChat socketStatusChange")
+    func socketReconnect(){
+        print("WeChat socketReconnect")
     }
     
     //saveChatSettings
@@ -135,16 +126,15 @@ import Alamofire
             self.ebus?.SendSignal(data: signalpack! )
             
             //cloud contacts add
-             self.utils?.restContactsAdd()
+            self.utils?.restContactsAdd()
             
             //unread updatedb
             let unreadpack = self.utils?.getUnreadPackJson()
             self.ebus?.exunread(data: unreadpack!)
             
         })
-        
+
     }
-    
     
     
     //connect
@@ -211,11 +201,9 @@ import Alamofire
         
         DispatchQueue.global().async {
             let success = self.dbhelper!.operatorContacts(data: jdata)
-            if !success {
-                let pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR,messageAs: JSON(["success":false]).dictionaryObject!)
-                
-                self.commandDelegate!.send( pluginResult, callbackId: command.callbackId)
-            }
+            
+            let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK,messageAs: JSON(["success": success]).dictionaryObject!)
+            self.commandDelegate!.send( pluginResult, callbackId: command.callbackId)
         }
     }
     
@@ -300,10 +288,11 @@ import Alamofire
     @objc(getOpenRooms:)
     func getOpenRooms(_ command: CDVInvokedUrlCommand){
         var jdata = JSON(command.arguments[0])
+
+        let sid = jdata["from"].exists() ? jdata["from"].stringValue : "togroup"
         
-        let sid = jdata["from"].stringValue
         let channel = jdata["channel"].stringValue
-        let resturl = "\(utils!.getServerURL())/\(sid)/\(channel)"
+        let resturl = "\(utils!.getServerURL())/xopenrooms/\(sid)/\(channel)"
         
         DispatchQueue.global().async {
             Alamofire.request( resturl ,headers:["Accept": "application/json"]).responseJSON { response in

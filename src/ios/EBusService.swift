@@ -15,6 +15,7 @@ class EBusService : NSObject{
     var dbhelper:DBHelper?
     var socket:SocketIOClient?
     var delegate: EBusDelegate?
+    var utils:Utils?
     
     var ispass = true
     
@@ -40,35 +41,27 @@ class EBusService : NSObject{
         if socket == nil {
             let serverip = data["serverip"].stringValue
             let port = data["port"].intValue
-            let url = URL(string: "http://\(serverip):\(port)")
+            let xhttp = data["protocol"].stringValue
+            
+            var url = URL(string:"");
+            
+            if  xhttp == "http" {
+                url = URL(string: "http://\(serverip):\(port)")
+            }
+            
+            if  xhttp == "https" {
+                url = URL(string: "https://\(serverip)")
+            }
             
             //socket = SocketIOClient(socketURL: url!, config: [.log(true), .forcePolling(true)])
-            socket = SocketIOClient(socketURL: url!, config: [ .forcePolling(true)])
+            socket = SocketIOClient(socketURL: url!, config: [ .forcePolling(true),.forceNew(true)])
             addHandlers()
             socket?.connect()
         }
     }
     
     func Connect() -> Void {
-        let userDefault = UserDefaults.standard
-        let serverip = userDefault.object(forKey: "serverip")
-        let port = userDefault.object(forKey: "port")
-
-        if userDefault.object(forKey: "serverip") == nil || userDefault.object(forKey: "port") == nil {
-            return
-        }
-        
-        if socket == nil {
-
-            let url = URL(string: "http://\(serverip!):\( String(describing: port!) )")
-            //socket = SocketIOClient(socketURL: url!, config: [.log(true), .forcePolling(true)])
-            socket = SocketIOClient(socketURL: url!, config: [ .forcePolling(true)])
-            addHandlers()
-            socket?.connect()
-        }
-        
-        
-        print("EBusService Connect")
+        Connect(data: (utils?.getSettings())!  );
     }
     
     func DisConnect() -> Void {
@@ -143,6 +136,14 @@ class EBusService : NSObject{
         
         socket?.on(clientEvent: .reconnect, callback: { (data, ack) in
             print("EBusService Handlers reconnect")
+            //self.delegate?.socketReconnect()
+            DispatchQueue.global().asyncAfter(deadline: .now() + .milliseconds(2000), execute: {
+                let multichanns = self.utils!.getMultiChanns()
+                self.MultiSubscribe(data: multichanns )
+		
+		let signalpack = self.utils?.getSignalPack()
+                self.SendSignal(data: signalpack! )
+            })
         })
         
         
@@ -172,7 +173,6 @@ class EBusService : NSObject{
                     
                     //accept contacts recieve
                     if ( self.dbhelper!.hasContacts(m_id: sid)){
-                        print("in contacts list--------------->")
                         
                         /**
                          owner:"send" ,reciever:"send|notify" , other:"invite"
@@ -258,10 +258,6 @@ class EBusService : NSObject{
         
         socket?.on(clientEvent: .statusChange, callback: { (data, ack) in
             print("EBuseSErvice Event statusChange")
-            
-            if self.ispass {
-                 self.delegate?.socketStatusChange()
-            }
         })
     }
     

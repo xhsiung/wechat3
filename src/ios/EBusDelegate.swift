@@ -12,6 +12,6 @@ protocol EBusDelegate : NSObjectProtocol {
     func msgCallback(data:JSON)
     func msgUnReadCallback(data:JSON)
     func msgUnReadInitCallback(data:JSON)
-    func socketStatusChange()
+    func socketReconnect()
 
 }

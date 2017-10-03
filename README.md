@@ -381,7 +381,7 @@ data:<input type="text" id="xmsg" value="mymessage">
         wechat.openrooms( pack );
     }
     function getOpenRooms(){
-        //for personnal
+        //for personal
 	var pack = { channel:$("#xchannel").val() , from: "u001" };
  
         //for group

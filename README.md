@@ -383,7 +383,7 @@ data:<input type="text" id="xmsg" value="mymessage">
     function getOpenRooms(){
         //for personnal
 	var pack = { channel:$("#xchannel").val() , from: "u001" };
-
+ 
         //for group
         //var pack = { channel:$("#xchannel").val() };
 

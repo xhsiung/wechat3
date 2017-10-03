@@ -380,7 +380,12 @@ data:<input type="text" id="xmsg" value="mymessage">
         wechat.openrooms( pack );
     }
     function getOpenRooms(){
-        var pack = { channel:$("#xchannel").val() , from: "u001" };
+        //for personnal
+	var pack = { channel:$("#xchannel").val() , from: "u001" };
+
+        //for group
+        //var pack = { channel:$("#xchannel").val() };
+
         wechat.getOpenRooms( pack , function(obj){
             console.log(obj);
             for (var i=0 ; i< obj.data.length ; i++){

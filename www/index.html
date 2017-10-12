@@ -2,6 +2,7 @@
 
 <html>
     <head>
+        <meta charset="UTF-8">
         <meta http-equiv="Content-Security-Policy" content="default-src 'self' * data: gap: https://ssl.gstatic.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">
             <meta name="format-detection" content="telephone=no">
                 <meta name="msapplication-tap-highlight" content="no">
@@ -32,39 +33,42 @@
         
         <hr>
         tid:<input type="text" id="xtid"  value="u002">
-            channel:<input type="text" id="xchannel" value="u002@u001">
-                data:<input type="text" id="xmsg" value="mymessage">
-                    <hr>
+        channel:<input type="text" id="xchannel" value="u002@u001">
+        data:<input type="text" id="xmsg" value="mymessage">
+                <hr>
                     
-                    <button type="button" onclick="multiSubscribe()">multiSubscribe</button>
-                    <button type="button" onclick="multiUnSubscribe()">multiUnSubscribe</button>
+        <button type="button" onclick="multiSubscribe()">multiSubscribe</button>
+        <button type="button" onclick="multiUnSubscribe()">multiUnSubscribe</button>
                     
-                    <button type="button" onclick="openrooms()" >openrooms</button>
-                    <button type="button" onclick="closerooms()" >closerooms</button>
-                    <button type="button" onclick="getOpenRooms()" >getOpenRooms</button>
+        <button type="button" onclick="openrooms()" >openrooms</button>
+        <button type="button" onclick="closerooms()" >closerooms</button>
+        <button type="button" onclick="getOpenRooms()" >getOpenRooms</button>
+        
+        <button type="button" onclick="send()">send</button>
+        <button type="button" onclick="sendwrapData()" >sendwrapData</button>
+        <button type="button" onclick="sendGroup()">sendGroup</button>
+        <button type="button" onclick="undelivered()">undelivered</button>
+        <button type="button" onclick="querydbdate()">querydbdate</button>
+        <button type="button" onclick="delChatHistory()" >delChatHistory</button>
                     
-                    <button type="button" onclick="send()">send</button>
-                    <button type="button" onclick="sendGroup()">sendGroup</button>
-                    <button type="button" onclick="undelivered()">undelivered</button>
-                    <button type="button" onclick="querydbdate()">querydbdate</button>
-                    <button type="button" onclick="delChatHistory()" >delChatHistory</button>
+        <button type="button" onclick="getOnLineUsers()" >getOnLineUsers</button>
+        <button type="button" onclick="crudTsFlag()" >crudTsFlag</button>
+        <button type="button" onclick="crudNews()" >crudNews</button>
+        <button type="button" onclick="resetdb()" >resetdb</button>
                     
-                    <button type="button" onclick="getOnLineUsers()" >getOnLineUsers</button>
-                    <button type="button" onclick="crudTsFlag()" >crudTsFlag</button>
-                    <button type="button" onclick="crudNews()" >crudNews</button>
-                    <button type="button" onclick="resetdb()" >resetdb</button>
+        <button type="button" onclick="myclear()">myclear</button>
+        <button type="button" onclick="mytest()">mytest</button>
                     
-                    <button type="button" onclick="myclear()">myclear</button>
-                    <button type="button" onclick="mytest()">mytest</button>
+        <div id="message"></div>
                     
-                    <div id="message"></div>
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/base64.min.js"></script>
                     
-                    <script type="text/javascript" src="js/jquery.min.js"></script>
-                    <script type="text/javascript" src="cordova.js"></script>
-                    <script type="text/javascript" src="js/index.js"></script>
-                    <script type="text/javascript">
-                        document.addEventListener("deviceready", onDeviceReady, false);
-                        function onDeviceReady() {
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript">
+                    document.addEventListener("deviceready", onDeviceReady, false);
+                    function onDeviceReady() {
                             window.addEventListener("wechatevent", OnEBusEvent, false);
                         };
                     
@@ -72,28 +76,32 @@
                         console.log("OnEBusEvent");
                     };
                     function msgCallback(obj){
-                        console.log(obj);
-                        for (var i=0; i < obj.data.length; i++){
-                            $("#message").append("<p>" + obj.data[i].data + "</p>");
+                        var xobj = wechat.unwrapData(obj);
+                        console.log(xobj);
+                        for (var i=0; i < xobj.data.length; i++){
+                            $("#message").append("<p>" + xobj.data[i].data + "</p>");
                         }
                     }
                     //unreaded
                     function wechatOnUnReadChat(obj){
-                        //console.log( obj  )
-                        for (var i=0; i< obj.data.length ; i++){
-                            console.log(obj.data[i])
+                        var xobj =  wechat.unwrapData(obj );
+                        //console.log( xobj  )
+                        for (var i=0; i< xobj.data.length ; i++){
+                            console.log(xobj.data[i])
                         }
                     }
                     // only one shoot
                     function wechatOnUnReadChatInit( obj ){
-                        //console.log( obj  )
-                        for (var i=0; i< obj.data.length ; i++){
-                            console.log(obj.data[i])
+                        var xobj =  wechat.unwrapData(obj );
+                        //console.log( xobj  )
+                        for (var i=0; i< xobj.data.length ; i++){
+                            console.log(xobj.data[i])
                         }
                     }
                     function saveChatSettings(){
                         var conf = { serverip: "",
-                            port: 0,
+                            port: 2,
+                            protocol: "https",
                             notifyTarget: "",
                             hasNotify: 1,
                             notifyTitle: "",
@@ -143,17 +151,28 @@
                     
                     function send(){
                         var pack = {channel:"u002@u001",
-                            device:"desktop|mobile",
-                            action:"send",
-                            tid:$("#xtid").val(),
-                            data: $("#xmsg").val() };
+                                device:"desktop|mobile",
+                                action:"send",
+                                tid:$("#xtid").val(),
+                                data: $("#xmsg").val() };
                         wechat.send(pack);
                     }
+        
+                    function sendwrapData(){
+                        var pack = {channel:"u002@u001",
+                                device:"desktop|mobile",
+                                action:"send",
+                                tid:$("#xtid").val(),
+                                dataType: "Text",
+                                dataText: $("#xmsg").val()};
+                        wechat.sendwrapData(pack);
+                    }
+        
                     function sendGroup(){
                         var pack = {device:"desktop|mobile",
                             channel: $("#xchannel").val(),
                             tid: $("#xtid").val(),
-                            gid: "g0002",
+                            gid: "g002",
                             action:"send",
                             category:"user",
                             data: $("#xmsg").val() };
@@ -163,8 +182,35 @@
                         //only action:"insert|update|delete|deleteall"
                         var obj = { action:"deleteall"}
                         
-                        var obj2 = { action: "insert",m_id: "u001",
-                            custom_name:"alex02", corps: -1, updated_time:"1495430981548"} ;
+                        var owner = {
+                            "glast_updated_time" : "",
+                            "action" : "insert",
+                            "picture_path" : "",
+                            "email" : "alex@bais.com.tw",
+                            "ulast_updated_time" : "",
+                            "mobile" : "",
+                            "custom_name" : "alex",
+                            "grade" : "sta",
+                            "created_time" : 1499397762100,
+                            "updated_time" : "",
+                            "contact_id" : "",
+                            "contact_key" : "",
+                            "m_id" : "u001",
+                            "peonums" : 0,
+                            "isgroup" : 0,
+                            "others" : "",
+                            "xgroup" : "",
+                            "birth" : "0000-00-00",
+                            "addressbook" : "\/\/\/",
+                            "phone" : "",
+                            "corps" : -1,
+                            "islock" : 0,
+                            "sex" : "男",
+                            "status_msg" : ""
+                        }
+                        
+                        //var obj2 = { action: "insert",m_id: "u001",
+                        //    custom_name:"alex02", corps: -1, updated_time:"1495430981548"} ;
                         
                         var obj3 = { action: "insert" ,m_id: "u002", custom_name:"alex03"} ;
                         
@@ -174,15 +220,16 @@
                         var obj5 = { action: "insert" ,m_id: "g001",isgroup: 1, custom_name:"mygroup01"} ;
                         var obj6 = { action: "insert" ,m_id: "g002",isgroup: 1, custom_name:"mygroup02" } ;
                         
-                        var pack = [ obj , obj2 , obj3 , obj4, obj5, obj6] ;
+                        var pack = [ obj , owner , obj3 , obj4, obj5, obj6] ;
                         
                         wechat.multiRegister( pack , function(){ alert("error")})
                     }
                     //getOwner
                     function getOwner(){
                         wechat.getOwner( function(data){
-                                        console.log( data )
-                                        });
+                                        console.log( data ) ;
+                                        alert(data["m_id"]) ;
+                        });
                     }
                     
                     //existOwner
@@ -224,10 +271,11 @@
                         var pack = { channel:$("#xchannel").val() ,offset:0, limit:10 };
                         console.log(pack);
                         wechat.querydbdate( pack , function(data){
-                                           console.log( data );
-                                           } , function(err){
+                                           var xdata = wechat.unwrapData(data);
+                                           console.log( xdata );
+                                        }, function(err){
                                            alert("eror");
-                                           });
+                                        });
                     }
                     
                     //delChatHistory
@@ -252,11 +300,9 @@
                         wechat.openrooms( pack );
                     }
                     function getOpenRooms(){
-			//for personal
-                        var pack = { channel:$("#xchannel").val() , from: "u001" };
-                            
-			//for group
-                        //var pack = { channel:$("#xchannel").val() };
+                        
+                        //var pack = { channel:$("#xchannel").val() , from: "u001" };
+                        var pack = { channel: "g3209" };
                         wechat.getOpenRooms( pack , function(obj){
                                 console.log(obj);
                                 for (var i=0 ; i< obj.data.length ; i++){
@@ -339,6 +385,6 @@
                     function mytest(){
                         wechat.test()
                     }
-                    </script>
+        </script>
     </body>
 </html>

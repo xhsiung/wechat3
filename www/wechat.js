@@ -1,7 +1,6 @@
 cordova.define("cordova-plugins-wechat.wechat", function(require, exports, module) {
    var WeChat = function(){
    var self = this;
-               
    self.channels = {
         wechatevent :cordova.addWindowEventHandler("wechatevent")
    };
@@ -77,10 +76,45 @@ cordova.define("cordova-plugins-wechat.wechat", function(require, exports, modul
    WeChat.prototype.send = function(arg0){
         cordova.exec( null , null , "WeChat", "send" , [arg0]);
    }
-   
+
+   //sendwrapData
+   WeChat.prototype.sendwrapData = function( arg0 ){
+        var bobj={};
+        var vdata = arg0[ "data" + arg0["dataType"]  ] ;
+        if ( typeof vdata != 'string'){
+            console.log(  bobj[ "data" + arg0["dataType"]  ]  + " is not string");
+            return;
+        }
+               
+        bobj[ "data" + arg0["dataType"]  ] =  vdata ;
+        bobj[ "dataType" ] =  arg0["dataType"];
+        arg0["data"] = Base64.encode( JSON.stringify( bobj ) );
+        cordova.exec( null , null , "WeChat", "send" , [arg0]);
+    }
+    
+    //unwrapData
+    WeChat.prototype.unwrapData = function( arg0 ){
+        var arrData = [] ;
+        for (var i=0; i < arg0.data.length ; i++){
+            var obj = arg0.data[i];
+            try{
+            var o = JSON.parse( Base64.decode( obj["data"] ) );
+               delete obj["data"];
+               obj[ "dataType" ] = o.dataType;
+               obj["data"+o.dataType] = o[ "data" + o.dataType ];
+               obj["data"] = o[ "data" + o.dataType ] ;
+               arrData.push( obj );
+            }catch (e){
+               arrData.push( obj );
+            }
+        }
+               
+        return { data: arrData };
+    }
+               
    //multiRegister
-   WeChat.prototype.multiRegister = function(arg0, successCallback ){
-        cordova.exec( successCallback , null , "WeChat", "multiRegister" , [arg0]);
+   WeChat.prototype.multiRegister = function(arg0, errorCallback ){
+        cordova.exec( null , errorCallback , "WeChat", "multiRegister" , [arg0]);
    }
    
    //getOwner
@@ -108,9 +142,8 @@ cordova.define("cordova-plugins-wechat.wechat", function(require, exports, modul
    //initConn
    WeChat.prototype.initConn = function(){
         cordova.exec( null , null , "WeChat", "initConn", []);
-        WeChat.count++;
    }
-               
+   
    //undelivered
    WeChat.prototype.undelivered = function(successCallback){
         cordova.exec( successCallback , null , "WeChat", "undelivered" , []);
@@ -174,6 +207,5 @@ cordova.define("cordova-plugins-wechat.wechat", function(require, exports, modul
    }
    
    module.exports = new WeChat();
-
 
 });

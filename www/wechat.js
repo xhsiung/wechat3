@@ -82,7 +82,7 @@ cordova.define("cordova-plugins-wechat.wechat", function(require, exports, modul
         var bobj={};
         var vdata = arg0[ "data" + arg0["dataType"]  ] ;
         if ( typeof vdata != 'string'){
-            console.log(  bobj[ "data" + arg0["dataType"]  ]  + " is not string");
+            console.log(  vdata  + " is not string");
             return;
         }
                

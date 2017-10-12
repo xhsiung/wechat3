@@ -61,6 +61,16 @@ send
 wechat.send();
 ```
 
+sendwrapData
+```
+wechat.sendwrapData();
+```
+
+unwrapData
+```
+wechat.unwrapData();
+```
+
 querydbdate
 ```
 wechat.querydbdate();
@@ -534,4 +544,4 @@ Done  work:
 
 ## History
 
-* **v1.0.1** : 2017-09-13
+* **v1.0.1** : 2017-10-12

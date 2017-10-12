@@ -1,4 +1,3 @@
-cordova.define("cordova-plugins-wechat.wechat", function(require, exports, module) {
    var WeChat = function(){
    var self = this;
    self.channels = {
@@ -208,4 +207,3 @@ cordova.define("cordova-plugins-wechat.wechat", function(require, exports, modul
    
    module.exports = new WeChat();
 
-});

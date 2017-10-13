@@ -96,8 +96,8 @@
                         }
                     }
                     function saveChatSettings(){
-                        var conf = { serverip: "wechat.ebais.com.tw",
-                            port: 3002,
+                        var conf = { serverip: "",
+                            port: 2,
                             protocol: "https",
                             notifyTarget: "",
                             hasNotify: 1,
@@ -112,7 +112,7 @@
                         
                         wechat.saveChatSettings( conf , function(err){
                                                 alert("error");
-                                                });
+                                               });
                     }
                     //getChatSettings
                     function getChatSettings(){

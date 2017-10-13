@@ -389,7 +389,7 @@ class DBHelper {
     func updateChatHistoryStatus(action:String , channel:String , status:Int ) -> Bool {
         do {
             let tbFilterChatHistory = tbChatHistory.filter(chatHistoryAction == action && chatHistoryChannel == channel)
-            let xupdate = tbFilterChatHistory.update([ chatHistoryStatus <- status])
+            let xupdate = tbFilterChatHistory.update([ chatHistoryStatus <- status] )
             try db?.run(xupdate)
             return true
         } catch {
@@ -936,19 +936,20 @@ class DBHelper {
             for tb in tbs {
                 switch tb.lowercased() {
                 case "chathistory":
-                    print("chathistory")
+                    print("chathistory delete")
                     //try db.run( tbChatHistory.delete() )
                     try db?.run(tbChatHistory.delete())
                 case "contacts":
-                    print("contacts")
+                    print("contacts delete")
                     try db?.run( tbContacts.delete() )
                 case "openrooms":
-                    print("openrooms")
+                    print("openrooms delete")
                     try db?.run( tbOpenRooms.delete() )
                 case "chatnews":
-                    print("chatnews")
+                    print("chatnews delete")
                     try db?.run( tbChatNews.delete() )
                 case "chattsflag":
+                    print("chattsflag delete")
                     try db?.run(tbChatTsFlag.delete() )
                 default: break
                 }

@@ -4,10 +4,10 @@
     <head>
         <meta charset="UTF-8">
         <meta http-equiv="Content-Security-Policy" content="default-src 'self' * data: gap: https://ssl.gstatic.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">
-            <meta name="format-detection" content="telephone=no">
-                <meta name="msapplication-tap-highlight" content="no">
-                    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
-                        <title>Hello World</title>
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <title>Hello World</title>
                         
     </head>
     <body>
@@ -76,31 +76,28 @@
                         console.log("OnEBusEvent");
                     };
                     function msgCallback(obj){
-                        var xobj = wechat.unwrapData(obj);
-                        console.log(xobj);
-                        for (var i=0; i < xobj.data.length; i++){
-                            $("#message").append("<p>" + xobj.data[i].data + "</p>");
+                        console.log(obj);
+                        for (var i=0; i < obj.data.length; i++){
+                            $("#message").append("<p>" + obj.data[i].data + "</p>");
                         }
                     }
+        
                     //unreaded
                     function wechatOnUnReadChat(obj){
-                        var xobj =  wechat.unwrapData(obj );
-                        //console.log( xobj  )
-                        for (var i=0; i< xobj.data.length ; i++){
-                            console.log(xobj.data[i])
+                        //console.log( obj  )
+                        for (var i=0; i< obj.data.length ; i++){
+                            console.log(obj.data[i])
                         }
                     }
                     // only one shoot
                     function wechatOnUnReadChatInit( obj ){
-                        var xobj =  wechat.unwrapData(obj );
-                        //console.log( xobj  )
-                        for (var i=0; i< xobj.data.length ; i++){
-                            console.log(xobj.data[i])
+                        for (var i=0; i< obj.data.length ; i++){
+                            console.log(obj.data[i])
                         }
                     }
                     function saveChatSettings(){
-                        var conf = { serverip: "",
-                            port: 2,
+                        var conf = { serverip: "wechat.ebais.com.tw",
+                            port: 3002,
                             protocol: "https",
                             notifyTarget: "",
                             hasNotify: 1,
@@ -186,9 +183,9 @@
                             "glast_updated_time" : "",
                             "action" : "insert",
                             "picture_path" : "",
-                            "email" : "alex@bais.com.tw",
+                            "email" : "Alex@bais.com.tw",
                             "ulast_updated_time" : "",
-                            "mobile" : "",
+                            "mobile" : "0938058318",
                             "custom_name" : "alex",
                             "grade" : "sta",
                             "created_time" : 1499397762100,
@@ -271,8 +268,7 @@
                         var pack = { channel:$("#xchannel").val() ,offset:0, limit:10 };
                         console.log(pack);
                         wechat.querydbdate( pack , function(data){
-                                           var xdata = wechat.unwrapData(data);
-                                           console.log( xdata );
+                                           console.log( data );
                                         }, function(err){
                                            alert("eror");
                                         });

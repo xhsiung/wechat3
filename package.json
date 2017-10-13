@@ -1,5 +1,5 @@
 {
-	"name": "wechat",
-	"version": "0.0.2",
-  	"description": "Cordova Device Plugin"
+	"name": "WeChat",
+	"version": "1.0.3",
+  	"description": "WeChat Plugin"
 }

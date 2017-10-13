@@ -21,9 +21,8 @@ class Utils {
     }
     
     static func getInviteChann(sid:String,tid:String) -> String {
-        if ( sid == tid ) {
-            return "\(sid)@\(sid)"
-        }
+        if ( sid == tid ) { return "\(sid)@\(sid)"}
+        
         let max = (sid > tid) ? sid : tid
         let min = (sid < tid) ? sid : tid
         

@@ -42,7 +42,7 @@ import Alamofire
 
         DispatchQueue.global().async {
             //update
-            self.commandDelegate!.evalJs("msgCallback(\(data))")
+            self.commandDelegate!.evalJs("msgCallbackInterface(\(data))")
             
             //front readed write db
             if !WeChat.roomName.isEmpty{
@@ -56,7 +56,7 @@ import Alamofire
     func msgUnReadCallback(data: JSON) {
         print("WeChat msgUnReadCallback")
         DispatchQueue.global().async {
-            self.commandDelegate!.evalJs("wechatOnUnReadChat(\(data))")
+            self.commandDelegate!.evalJs("wechatOnUnReadChatInterface(\(data))")
         }
     }
     
@@ -65,7 +65,7 @@ import Alamofire
         print("WeChat msgUnReadInitCallback")
         isUnreadInit = true
         DispatchQueue.global().async {
-            self.commandDelegate!.evalJs("wechatOnUnReadChatInit(\(data))")
+            self.commandDelegate!.evalJs("wechatOnUnReadChatInitInterface(\(data))")
         }
     }
     
@@ -74,7 +74,7 @@ import Alamofire
         DispatchQueue.global().asyncAfter(deadline: .now() + .milliseconds(5000), execute: {
             if self.isUnreadInit { return }
             let jobj = self.dbhelper?.queryGroupChatHistory()
-            self.commandDelegate!.evalJs("wechatOnUnReadChatInit(\(jobj!))")
+            self.commandDelegate!.evalJs("wechatOnUnReadChatInitInterface(\(jobj!))")
         })
     }
     
@@ -289,7 +289,8 @@ import Alamofire
     func getOpenRooms(_ command: CDVInvokedUrlCommand){
         var jdata = JSON(command.arguments[0])
 
-        let sid = jdata["from"].exists() ? jdata["from"].stringValue : "togroup"
+        var sid = jdata["from"].exists() ? jdata["from"].stringValue : "togroup"
+        if sid.isEmpty { sid = "togroup"}
         
         let channel = jdata["channel"].stringValue
         let resturl = "\(utils!.getServerURL())/xopenrooms/\(sid)/\(channel)"

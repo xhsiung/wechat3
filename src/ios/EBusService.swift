@@ -141,7 +141,7 @@ class EBusService : NSObject{
                 let multichanns = self.utils!.getMultiChanns()
                 self.MultiSubscribe(data: multichanns )
 		
-		let signalpack = self.utils?.getSignalPack()
+                let signalpack = self.utils?.getSignalPack()
                 self.SendSignal(data: signalpack! )
             })
         })
@@ -229,6 +229,7 @@ class EBusService : NSObject{
                         let jobj = self.dbhelper?.queryUnreadChatHistory(action: "send")
                         self.delegate?.msgUnReadCallback(data: jobj!)
                         
+                    
                         //false no rows --> init
                     }else{
                         self.dbhelper?.updateInsertChatHistory(data: obj, action: "send|notify|invite", status: 1)

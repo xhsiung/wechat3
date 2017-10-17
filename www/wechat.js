@@ -158,12 +158,15 @@ cordova.define("cordova-plugins-wechat.wechat", function(require, exports, modul
    
    //undelivered
    WeChat.prototype.undelivered = function(successCallback){
-        cordova.exec( successCallback , null , "WeChat", "undelivered" , []);
+	function undeliveredSuccessCallback(obj){
+                var xobj = wechat.unwrapData(obj);
+        	successCallback(xobj);
+        }
+        cordova.exec( undeliveredSuccessCallback , null , "WeChat", "undelivered" , []);
    }
    
                
    //querydbdate
-               
    WeChat.prototype.querydbdate = function(arg0, successCallback){
         function querydbdateSuccessCallback(obj){
                var xobj = wechat.unwrapData( obj );
